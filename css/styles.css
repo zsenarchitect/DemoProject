@@ -54,6 +54,16 @@ body {
     cursor: crosshair;
 }
 
+/* Override crosshair cursor when hovering over Google Maps */
+body:has(iframe[src*="google.com/maps"]:hover) {
+    cursor: default;
+}
+
+/* Fallback for browsers that don't support :has() */
+iframe[src*="google.com/maps"]:hover ~ * {
+    cursor: default;
+}
+
 /* Bottom HUD to align XY, Search and Return-to-top */
 .bottom-hud {
     position: fixed;
@@ -258,6 +268,29 @@ p {
 /* Additional hover state for better coverage */
 .walkthru-container:hover iframe {
     cursor: none !important;
+}
+
+/* Hide crosshair cursor when hovering over Google Map iframe */
+iframe[title*="Grace Farms Location Map"],
+iframe[title*="Location Map"],
+iframe[src*="google.com/maps"] {
+    cursor: default !important;
+}
+
+/* Hide crosshair when hovering over map container */
+iframe[title*="Grace Farms Location Map"]:hover,
+iframe[title*="Location Map"]:hover,
+iframe[src*="google.com/maps"]:hover {
+    cursor: default !important;
+}
+
+/* Additional coverage for map containers */
+.sheet-card iframe[src*="google.com/maps"] {
+    cursor: default !important;
+}
+
+.sheet-card iframe[src*="google.com/maps"]:hover {
+    cursor: default !important;
 }
 
 .walkthru-video {

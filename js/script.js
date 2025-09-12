@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeSearchFunctionality();
     }
 
+    // Initialize Google Map cursor behavior
+    initializeGoogleMapCursor();
+
     // Assemble bottom HUD after core widgets are added
     setTimeout(setupBottomHud, 0);
 });
@@ -2720,5 +2723,46 @@ function initializeSearchFunctionality() {
     initializeSearchData();
     
     console.log('Search functionality initialized');
+}
+
+// Google Map cursor behavior
+function initializeGoogleMapCursor() {
+    // Find all Google Maps iframes
+    const googleMapIframes = document.querySelectorAll('iframe[src*="google.com/maps"], iframe[title*="Location Map"], iframe[title*="Grace Farms Location Map"]');
+    
+    if (googleMapIframes.length === 0) {
+        return; // No Google Maps found
+    }
+    
+    googleMapIframes.forEach(iframe => {
+        // Add event listeners for mouse enter/leave
+        iframe.addEventListener('mouseenter', function() {
+            // Hide crosshair cursor when hovering over map
+            document.body.style.cursor = 'default';
+        });
+        
+        iframe.addEventListener('mouseleave', function() {
+            // Restore crosshair cursor when leaving map
+            document.body.style.cursor = 'crosshair';
+        });
+        
+        // Also handle the container div
+        const container = iframe.closest('.sheet-card, .walkthru-container, div');
+        if (container) {
+            container.addEventListener('mouseenter', function() {
+                if (container.contains(iframe)) {
+                    document.body.style.cursor = 'default';
+                }
+            });
+            
+            container.addEventListener('mouseleave', function() {
+                if (container.contains(iframe)) {
+                    document.body.style.cursor = 'crosshair';
+                }
+            });
+        }
+    });
+    
+    console.log('Google Map cursor behavior initialized');
 }
 
