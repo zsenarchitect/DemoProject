@@ -1995,6 +1995,7 @@ body.cad-cursor {
     align-items: center;
     padding: 0 var(--spacing-lg); /* vertically centered by container height */
     height: 100%;
+    overflow: visible; /* ensure placeholder isn't clipped */
 }
 
 #searchInput {
@@ -2005,7 +2006,8 @@ body.cad-cursor {
     color: var(--text-primary);
     font-size: 1rem;
     font-weight: 500;
-    padding: 0; /* inherit vertical centering */
+    padding: 4px 0; /* prevent baseline clipping */
+    line-height: 1.2; /* avoid text cutoff */
     font-family: Helvetica, Arial, sans-serif;
 }
 
