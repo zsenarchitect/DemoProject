@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)https://zsenarchitect.github.io/DemoProject/presentation.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="Interactive project presentation with architectural drawings, renderings, and floor plans">
+    <meta name="keywords" content="architecture, presentation, drawings, renderings, floor plans">
+    <meta name="author" content="Architecture Demo">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Architecture Demo">
+    <link rel="apple-touch-icon" href="https://zsenarchitect.github.io/DemoProject/assets/images/favicon.svg">
+    <title>Project Presentation - Architecture Demo</title>
+    <link rel="stylesheet" href="./Project Presentation - Architecture Demo_files/styles.css">
+    <link rel="icon" type="image/svg+xml" href="https://zsenarchitect.github.io/DemoProject/assets/images/favicon.svg">
+    <!-- Preconnect to Google Fonts for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<style>
+        .sheet-card, .rendering-card, .video-card, .gallery-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style></head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <button class="hamburger-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="icon-burger" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </span>
+        <span class="icon-close" aria-hidden="true" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </span>
+    </button><ul class="nav-list">
+                <li><a href="https://zsenarchitect.github.io/DemoProject/index.html" class="nav-link">Home</a></li>
+                <li><a href="https://zsenarchitect.github.io/DemoProject/presentation.html" class="nav-link active">Presentation</a></li>
+                <li><a href="https://zsenarchitect.github.io/DemoProject/walkthrough.html" class="nav-link">Walkthrough</a></li>
+                <li><a href="https://zsenarchitect.github.io/DemoProject/about.html" class="nav-link">About</a></li>
+                <li><a href="https://zsenarchitect.github.io/DemoProject/download.html" class="nav-link">Download</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Side Navigation -->
+    <aside class="side-nav">
+        <ul class="side-nav-list">
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#rendering" class="side-nav-link">Rendering</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#floor-plan" class="side-nav-link">Floor Plan</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#elevation" class="side-nav-link">Elevation</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#section" class="side-nav-link">Life Safety</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#ceiling-plan" class="side-nav-link">Ceiling Plans</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#building-sections" class="side-nav-link">Sections</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#details" class="side-nav-link active">Details</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="https://zsenarchitect.github.io/DemoProject/presentation.html#detail" class="side-nav-link">Documentation</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content"><button class="side-nav-mobile-btn" aria-label="Toggle side navigation" aria-expanded="false">
+        <span class="icon-burger" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </span>
+        <span class="icon-close" aria-hidden="true" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </span>
+        <span>Navigation</span>
+    </button>
+        <!-- Rendering Section -->
+        <section id="rendering" class="section">
+            <div class="container">
+                <h2>Rendering</h2>
+                <div class="gallery">
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Exterior.png" alt="Exterior Rendering 01" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Exterior View - Main Facade</h4>
+                            <p>Main building exterior rendering showing the architectural design.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Exterior_01.png" alt="Exterior Rendering 02" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Exterior View - Side Elevation</h4>
+                            <p>Side elevation rendering highlighting the building's profile.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Interior_01.png" alt="Interior Rendering 01" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Interior - Main Lobby</h4>
+                            <p>Main lobby interior rendering showcasing the space design.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Office-White_Mode.png" alt="Interior Rendering 02" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Interior - Office Space</h4>
+                            <p>Office space interior rendering showing workspace layout.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Kitchen.png" alt="Kitchen Rendering" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Interior - Kitchen</h4>
+                            <p>Modern kitchen design with premium finishes and appliances.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Living_Room.png" alt="Living Room Rendering" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Interior - Living Room</h4>
+                            <p>Spacious living area with natural light and contemporary design.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="./Project Presentation - Architecture Demo_files/Villa_Exterior-Nightime.png" alt="Night Exterior Rendering" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Exterior - Night View</h4>
+                            <p>Dramatic nighttime exterior showcasing architectural lighting.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Floor Plan Section -->
+        <section id="floor-plan" class="section">
+            <div class="container">
+                <h2>Floor Plans</h2>
+                <div class="gallery">
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/SD100-Parking_Deck_Floor_Plan.png" alt="Site Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Site Plan</h4>
+                            <p>Overall site layout showing building placement and site features.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A100-Parking_Deck_Floor_Plan.png" alt="Parking Deck Floor Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Parking Deck</h4>
+                            <p>Underground parking layout with vehicle circulation and parking spaces.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A101-First_Floor_Plan.png" alt="First Floor Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>First Floor</h4>
+                            <p>Main entry level with lobby, retail spaces, and primary circulation.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A102-Second_Floor_Plan.png" alt="Second Floor Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Second Floor</h4>
+                            <p>Office spaces and collaborative areas with flexible workspace design.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A103-Third_Floor_Plan.png" alt="Third Floor Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Third Floor</h4>
+                            <p>Additional office floors with consistent layout and functionality.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A104-Fourth_Floor_Plan.png" alt="Fourth Floor Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Fourth Floor</h4>
+                            <p>Upper office level with premium views and executive spaces.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A105-Fifth_Floor_Plan.png" alt="Fifth Floor Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Fifth Floor</h4>
+                            <p>Top office floor with specialized workspaces and amenities.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A106-Green_Roof.png" alt="Green Roof" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Green Roof</h4>
+                            <p>Sustainable rooftop garden with recreational and environmental features.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A107-Roof_Plan.png" alt="Roof Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Roof Plan</h4>
+                            <p>Technical roof layout with mechanical equipment and access points.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Elevation Section -->
+        <section id="elevation" class="section">
+            <div class="container">
+                <h2>Elevations</h2>
+                <div class="gallery">
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A200-Existing_Conditions_Elevations.png" alt="Existing Conditions Elevations" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Existing Conditions</h4>
+                            <p>Documented elevations of the existing site conditions and surrounding context.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A201-Building_Elevations.png" alt="Building Elevations - Set 1" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Building Elevations (North/South)</h4>
+                            <p>Primary building facades showing architectural design and material selections.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A202-Building_Elevations.png" alt="Building Elevations - Set 2" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Building Elevations (East/West)</h4>
+                            <p>Secondary building facades with detailed architectural elements and fenestration.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Life Safety Section -->
+        <section id="section" class="section">
+            <div class="container">
+                <h2>Life Safety Plans</h2>
+                <div class="gallery">
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G100-Parking_Deck_Life_Safety_Plan.png" alt="Parking Deck Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Parking Deck Life Safety</h4>
+                            <p>Emergency egress routes and safety systems for the underground parking facility.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G101-First_Floor_Life_Safety_Plan.png" alt="First Floor Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>First Floor Life Safety</h4>
+                            <p>Emergency evacuation routes, fire exits, and safety equipment locations.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G102-Second_Floor_Life_Safety_Plan.png" alt="Second Floor Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Second Floor Life Safety</h4>
+                            <p>Comprehensive safety layout for the second level office spaces.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G103-Third_Floor_Life_Safety_Plan.png" alt="Third Floor Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Third Floor Life Safety</h4>
+                            <p>Emergency planning and safety systems for the third level.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G104-Fourth_Floor_Life_Safety_Plan.png" alt="Fourth Floor Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Fourth Floor Life Safety</h4>
+                            <p>Safety planning for upper-level office spaces with multiple egress routes.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G105-Fifth_Floor_Life_Safety_Plan.png" alt="Fifth Floor Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Fifth Floor Life Safety</h4>
+                            <p>Top floor emergency planning with specialized safety considerations.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/G106-Roof_Plan_Life_Safety_Plan.png" alt="Roof Life Safety" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Roof Level Life Safety</h4>
+                            <p>Safety systems and emergency access for the rooftop level.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ceiling Plans Section -->
+        <section id="ceiling-plan" class="section">
+            <div class="container">
+                <h2>Ceiling Plans</h2>
+                <div class="gallery">
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A108-First_Floor_Ceiling_Plan.png" alt="First Floor Ceiling Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>First Floor Ceiling</h4>
+                            <p>Ceiling layout showing lighting, HVAC, and architectural features.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A109-Second_Floor_Ceiling_Plan.png" alt="Second Floor Ceiling Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Second Floor Ceiling</h4>
+                            <p>Upper level ceiling design with integrated systems and finishes.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A110-Third_Floor_Ceiling_Plan.png" alt="Third Floor Ceiling Plan" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Third Floor Ceiling</h4>
+                            <p>Office level ceiling layout with modern lighting solutions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Building Sections Section -->
+        <section id="building-sections" class="section">
+            <div class="container">
+                <h2>Building Sections</h2>
+                <div class="gallery">
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A301-Building_Sections.png" alt="Building Section 1" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Main Building Section</h4>
+                            <p>Primary building section showing structural and spatial relationships.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A302-Building_Sections.png" alt="Building Section 2" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Cross Section</h4>
+                            <p>Cross-sectional view highlighting vertical circulation and floor heights.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card">
+                        <img src="./Project Presentation - Architecture Demo_files/A303-Building_Sections.png" alt="Building Section 3" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Detail Section</h4>
+                            <p>Detailed section showing construction assemblies and material transitions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Details Section -->
+        <section id="details" class="section">
+            <div class="container">
+                <h2>Architectural Details</h2>
+                <div class="gallery">
+                    <div class="gallery-item sheet-card fade-in">
+                        <img src="./Project Presentation - Architecture Demo_files/A401-Typical_Public_Restroom.png" alt="Public Restroom Detail" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Public Restroom</h4>
+                            <p>Typical public restroom layout and fixture arrangements.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card fade-in">
+                        <img src="./Project Presentation - Architecture Demo_files/A404-Residential_Lobby.png" alt="Residential Lobby Detail" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Residential Lobby</h4>
+                            <p>Main lobby design with reception and seating areas.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card fade-in">
+                        <img src="./Project Presentation - Architecture Demo_files/A405-Wall_Sections.png" alt="Wall Section Detail" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Wall Sections</h4>
+                            <p>Detailed wall construction showing materials and assemblies.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item sheet-card fade-in">
+                        <img src="./Project Presentation - Architecture Demo_files/K101-Cafe_Kitchen.png" alt="Café Kitchen Detail" style="cursor: pointer;">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Café Kitchen</h4>
+                            <p>Commercial kitchen layout with equipment and circulation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Summary -->
+        <section id="detail" class="section">
+            <div class="container">
+                <h2>Complete Documentation Set</h2>
+                <div class="sheet-card">
+                    <h3>Comprehensive Architectural Package</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg);">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: var(--accent-light); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--spacing-sm);">🏗️</div>
+                            <h4>Site &amp; Building Plans</h4>
+                            <p>Complete floor plans from parking to roof levels</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: var(--accent-light); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--spacing-sm);">🏢</div>
+                            <h4>Elevation Drawings</h4>
+                            <p>All building facades and existing conditions</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: var(--accent-light); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--spacing-sm);">🚨</div>
+                            <h4>Life Safety Plans</h4>
+                            <p>Emergency egress and safety systems</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: var(--accent-light); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--spacing-sm);">📋</div>
+                            <h4>Technical Documentation</h4>
+                            <p>Complete construction document set</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: var(--spacing-xl); text-align: center; font-size: 1.1rem; color: var(--text-secondary);">
+                        This presentation showcases a comprehensive architectural documentation package
+                        including site planning, building design, and life safety systems.
+                        All drawings are available for download in the Download section.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- Sheet Enlargement Modal -->
+    <div id="sheetModal" class="sheet-modal" style="display: none;">
+        <div class="sheet-modal-content">
+            <div class="sheet-modal-header">
+                <h3 id="sheetModalTitle">Sheet Title</h3>
+                <div class="sheet-modal-controls">
+                    <button id="penModeModalBtn" class="pen-mode-btn" title="Toggle Pen Mode">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"></circle>
+                        </svg>
+                        Pen Mode
+                    </button>
+                    <button id="downloadAnnotatedBtn" class="pen-mode-btn" title="Download Annotated Version">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></line>
+                        </svg>
+                        Download
+                    </button>
+                    <button id="closeSheetModal" class="pen-mode-btn" title="Close Sheet">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                        Close
+                    </button>
+                </div>
+            </div>
+            <div class="sheet-modal-body">
+                <div class="sheet-container">
+                    <canvas id="sheetBaseCanvas" class="sheet-base-canvas"></canvas>
+                    <canvas id="sheetDrawingCanvas" class="sheet-drawing-canvas"></canvas>
+                </div>
+                
+                <!-- Sheet Pen Mode Interface -->
+                <div id="sheetPenModeInterface" class="sheet-pen-mode-interface">
+                    <div class="sheet-pen-toolbar">
+                        <div class="sheet-pen-tools">
+                            <button id="sheetPenTool" class="sheet-pen-tool-btn active" title="Pen Tool">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"></circle>
+                                </svg>
+                            </button>
+                            <button id="sheetEraserTool" class="sheet-pen-tool-btn" title="Eraser Tool">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 21h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M12 3l8 8-8 8-8-8 8-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="sheet-pen-controls">
+                            <label for="sheetPenSize">Size:</label>
+                            <input type="range" id="sheetPenSize" min="1" max="20" value="3" class="sheet-pen-size-slider">
+                            <span id="sheetPenSizeValue">3</span>
+                            <label for="sheetPenColor">Color:</label>
+                            <input type="color" id="sheetPenColor" value="#ff6b35" class="sheet-pen-color-picker">
+                        </div>
+                        <div class="sheet-pen-actions">
+                            <button id="sheetClearAll" class="sheet-pen-action-btn" title="Clear All Annotations">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                Clear All
+                            </button>
+                            <button id="sheetClosePenMode" class="sheet-pen-action-btn" title="Close Pen Mode">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Search Bar -->
+    
+
+    <script src="./Project Presentation - Architecture Demo_files/script.js.download"></script>
+
+
+<div id="bottomHud" class="bottom-hud"><div id="searchContainer" class="search-container in-hud">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search drawings, renderings, and content..." autocomplete="off">
+            <button id="searchClear" class="search-clear" title="Clear search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div><button class="return-to-top visible in-hud" aria-label="Return to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+    </button><div id="cad-coord-display" class="in-hud">X: 792, Y: 521</div></div><div class="cad-crosshair-overlay" style="position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; display: block; opacity: 1; visibility: visible;"><div class="cad-crosshair-horizontal" style="position: absolute; width: 100vw; height: 1px; background: rgb(255, 107, 53); opacity: 0.9; box-shadow: rgba(255, 107, 53, 0.8) 0px 0px 4px; top: 521px; left: 0px;"></div><div class="cad-crosshair-vertical" style="position: absolute; width: 1px; height: 100vh; background: rgb(255, 107, 53); opacity: 0.9; box-shadow: rgba(255, 107, 53, 0.8) 0px 0px 4px; top: 0px; left: 792px;"></div><div class="cad-crosshair-center" style="position: absolute; width: 12px; height: 12px; border: 2px solid rgb(255, 107, 53); border-radius: 50%; background: rgba(255, 107, 53, 0.3); transform: translate(-50%, -50%); box-shadow: rgba(255, 107, 53, 0.8) 0px 0px 8px; left: 792px; top: 521px;"></div></div><div class="cad-grid-overlay" id="cad-grid-overlay" style="display: block; opacity: 0.3; visibility: visible; z-index: 9998;"></div></body></html>

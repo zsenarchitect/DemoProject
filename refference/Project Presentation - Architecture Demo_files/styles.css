@@ -874,18 +874,6 @@ body.cad-cursor {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    align-items: center;
-    justify-content: center;
-}
-
-.mobile-menu-btn .icon-burger,
-.mobile-menu-btn .icon-close {
-    display: inline-flex;
-}
-
-.mobile-menu-btn.is-open {
-    background: var(--accent-primary);
-    color: var(--text-primary);
 }
 
 /* Hamburger Menu Button - Always visible on non-landing pages */
@@ -945,6 +933,21 @@ body.cad-cursor {
     transform: rotate(90deg);
 }
 
+/* Mobile Close Button */
+.mobile-close-btn {
+    display: none;
+    background: var(--accent-primary);
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    min-width: 48px;
+    min-height: 48px;
+    margin-bottom: var(--spacing-lg);
+    align-self: flex-end;
+}
 
 /* Side Navigation Mobile Button */
 .side-nav-mobile-btn {
@@ -1124,14 +1127,6 @@ body.cad-cursor {
         left: 0;
     }
     
-    /* When the side nav is open, keep the toggle button visible but non-interactive
-       and behind the drawer to avoid overlapping text and accidental taps */
-    .side-nav.mobile-open + .main-content .side-nav-mobile-btn,
-    .side-nav.mobile-open ~ .main-content .side-nav-mobile-btn {
-        pointer-events: none;
-        z-index: 0;
-    }
-    
     /* Mobile backdrop for side navigation */
     .side-nav.mobile-open::before {
         content: '';
@@ -1202,6 +1197,12 @@ body.cad-cursor {
         visibility: visible;
     }
 
+    /* Show close button when mobile menu is open */
+    .nav-list.mobile-open .mobile-close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     /* Mobile menu backdrop */
     .nav-list.mobile-open::before {
