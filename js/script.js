@@ -394,22 +394,9 @@ if (document.querySelector('.gallery')) {
     initializeGalleryLightbox();
 }
 
-// CAD Crosshair functionality
+// CAD Crosshair functionality - Default Mode
 function initializeCADCrosshair() {
-    let isCADMode = false;
     let crosshairOverlay = null;
-    let toggleButton = null;
-
-    // Create toggle button
-    function createToggleButton() {
-        toggleButton = document.createElement('button');
-        toggleButton.className = 'cad-crosshair-toggle';
-        toggleButton.innerHTML = '🎯 CAD Mode';
-        toggleButton.title = 'Toggle CAD Crosshair Mode (Ctrl+Shift+C)';
-        
-        toggleButton.addEventListener('click', toggleCADMode);
-        document.body.appendChild(toggleButton);
-    }
 
     // Create crosshair overlay
     function createCrosshairOverlay() {
@@ -443,7 +430,7 @@ function initializeCADCrosshair() {
 
     // Update crosshair position
     function updateCrosshairPosition(e) {
-        if (!crosshairOverlay || !isCADMode) return;
+        if (!crosshairOverlay) return;
         
         const horizontal = crosshairOverlay.querySelector('.cad-crosshair-horizontal');
         const vertical = crosshairOverlay.querySelector('.cad-crosshair-vertical');
@@ -453,103 +440,6 @@ function initializeCADCrosshair() {
         vertical.style.left = e.clientX + 'px';
         center.style.left = e.clientX + 'px';
         center.style.top = e.clientY + 'px';
-    }
-
-    // Toggle CAD mode
-    function toggleCADMode() {
-        isCADMode = !isCADMode;
-        
-        if (isCADMode) {
-            enableCADMode();
-        } else {
-            disableCADMode();
-        }
-    }
-
-    // Enable CAD mode
-    function enableCADMode() {
-        // Add CAD cursor class to body
-        document.body.classList.add('cad-cursor');
-        
-        // Show crosshair overlay
-        if (crosshairOverlay) {
-            crosshairOverlay.style.display = 'block';
-        }
-        
-        // Show grid overlay
-        const gridOverlay = document.getElementById('cad-grid-overlay');
-        if (gridOverlay) {
-            gridOverlay.style.display = 'block';
-        }
-        
-        // Update toggle button
-        if (toggleButton) {
-            toggleButton.classList.add('active');
-            toggleButton.innerHTML = '🎯 CAD ON';
-        }
-        
-        // Add mouse move listener
-        document.addEventListener('mousemove', updateCrosshairPosition);
-        
-        console.log('CAD Crosshair Mode: ON');
-    }
-
-    // Disable CAD mode
-    function disableCADMode() {
-        // Remove CAD cursor class from body
-        document.body.classList.remove('cad-cursor');
-        
-        // Hide crosshair overlay
-        if (crosshairOverlay) {
-            crosshairOverlay.style.display = 'none';
-        }
-        
-        // Hide grid overlay
-        const gridOverlay = document.getElementById('cad-grid-overlay');
-        if (gridOverlay) {
-            gridOverlay.style.display = 'none';
-        }
-        
-        // Update toggle button
-        if (toggleButton) {
-            toggleButton.classList.remove('active');
-            toggleButton.innerHTML = '🎯 CAD Mode';
-        }
-        
-        // Remove mouse move listener
-        document.removeEventListener('mousemove', updateCrosshairPosition);
-        
-        console.log('CAD Crosshair Mode: OFF');
-    }
-
-    // Keyboard shortcut for CAD mode
-    function handleKeyboardShortcut(e) {
-        if (e.ctrlKey && e.shiftKey && e.code === 'KeyC') {
-            e.preventDefault();
-            toggleCADMode();
-        }
-    }
-
-    // Initialize CAD crosshair system
-    function init() {
-        createToggleButton();
-        createCrosshairOverlay();
-        
-        // Add keyboard shortcut listener
-        document.addEventListener('keydown', handleKeyboardShortcut);
-        
-        // Add click outside to disable (optional)
-        document.addEventListener('click', function(e) {
-            if (isCADMode && e.target === crosshairOverlay) {
-                // Clicked on overlay, do nothing
-                return;
-            }
-        });
-        
-        // Add debugging features
-        addDebugFeatures();
-        
-        console.log('CAD Crosshair system initialized. Press Ctrl+Shift+C to toggle.');
     }
 
     // Add debugging features
@@ -569,20 +459,15 @@ function initializeCADCrosshair() {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.8rem;
             z-index: 1000;
-            display: none;
             backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-md);
         `;
         coordDisplay.innerHTML = 'X: 0, Y: 0';
         document.body.appendChild(coordDisplay);
 
         // Update coordinates on mouse move
         document.addEventListener('mousemove', function(e) {
-            if (isCADMode) {
-                coordDisplay.style.display = 'block';
-                coordDisplay.innerHTML = `X: ${e.clientX}, Y: ${e.clientY}`;
-            } else {
-                coordDisplay.style.display = 'none';
-            }
+            coordDisplay.innerHTML = `X: ${e.clientX}, Y: ${e.clientY}`;
         });
 
         // Add performance monitoring
@@ -600,4 +485,34 @@ function initializeCADCrosshair() {
                 lastTime = currentTime;
             }
             
-          
+            requestAnimationFrame(monitorPerformance);
+        }
+
+        // Start performance monitoring
+        monitorPerformance();
+    }
+
+    // Initialize CAD crosshair system
+    function init() {
+        createCrosshairOverlay();
+        createGridOverlay();
+        
+        // Show overlays immediately
+        crosshairOverlay.style.display = 'block';
+        const gridOverlay = document.getElementById('cad-grid-overlay');
+        if (gridOverlay) {
+            gridOverlay.style.display = 'block';
+        }
+        
+        // Add mouse move listener
+        document.addEventListener('mousemove', updateCrosshairPosition);
+        
+        // Add debugging features
+        addDebugFeatures();
+        
+        console.log('CAD Crosshair system initialized - Default Mode Active');
+    }
+
+    // Start initialization
+    init();
+}

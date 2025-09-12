@@ -51,6 +51,7 @@ body {
     line-height: 1.6;
     font-size: 16px;
     overflow-x: hidden;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="16" y1="0" x2="16" y2="32" stroke="%23ff6b35" stroke-width="2"/><line x1="0" y1="16" x2="32" y2="16" stroke="%23ff6b35" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="none" stroke="%23ff6b35" stroke-width="1"/></svg>') 16 16, crosshair;
 }
 
 /* Typography */
@@ -442,7 +443,7 @@ p {
     height: 100vh;
     pointer-events: none;
     z-index: 9999;
-    display: none;
+    display: block;
 }
 
 .cad-crosshair-horizontal,
@@ -478,33 +479,7 @@ p {
     box-shadow: 0 0 8px rgba(255, 107, 53, 0.6);
 }
 
-.cad-crosshair-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--accent-border);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-sm) var(--spacing-md);
-    color: var(--text-primary);
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-.cad-crosshair-toggle:hover {
-    background: var(--accent-light);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-accent);
-}
-
-.cad-crosshair-toggle.active {
-    background: var(--accent-primary);
-    color: var(--bg-primary);
-}
+/* CAD crosshair toggle removed - now default cursor */
 
 /* Custom crosshair cursor using SVG */
 .cad-cursor {
@@ -520,7 +495,7 @@ p {
     height: 100vh;
     pointer-events: none;
     z-index: 9998;
-    display: none;
+    display: block;
     background-image: 
         linear-gradient(rgba(255, 107, 53, 0.1) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 107, 53, 0.1) 1px, transparent 1px);

@@ -62,12 +62,12 @@ DemoProject/
 This repository uses **Git LFS** to efficiently handle large architectural files:
 
 ### Large File Types Tracked by LFS:
-- **PDFs** (*.pdf) - Architectural drawings and documents
-- **Images** (*.png, *.jpg, *.jpeg, *.gif) - Renderings and assets
+- **Images** (*.png, *.jpg, *.jpeg, *.gif) - Architectural drawings (converted from PDF) and renderings
 - **Videos** (*.mp4, *.webm) - Walkthrough videos
 - **3D Models** (*.rvt) - Revit files
 - **Executables** (*.exe) - Software installers
 - **Archives** (*.zip) - Compressed files
+- **PDFs** (*.pdf) - Only downloadable documents (not converted)
 
 ### Benefits:
 - **Faster cloning**: Large files don't bloat the repository
@@ -75,10 +75,16 @@ This repository uses **Git LFS** to efficiently handle large architectural files
 - **Download compatibility**: All download buttons still work normally
 - **Version control**: Large files are still tracked and versioned
 
+### PDF to PNG Conversion:
+- **Architectural drawings** in `drawings/` folder are converted to PNG for faster web loading
+- **Download content** PDFs remain as PDFs to preserve quality for printing/downloading
+- Use tools like Adobe Acrobat, ImageMagick, or online converters to convert PDFs to PNG
+
 ### For Contributors:
 1. Ensure Git LFS is installed: `git lfs install`
 2. Large files are automatically handled by LFS
-3. Download links remain functional for website visitors
+3. Convert new PDF drawings to PNG format before adding to `drawings/` folder
+4. Keep downloadable documents as PDFs in `download content/` folder
 
 ## Development Workflow
 
