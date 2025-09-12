@@ -1597,3 +1597,73 @@ function initializeSheetEnlargement() {
     
     console.log('Sheet Enlargement system initialized');
 }
+
+// Return to Top functionality
+function initializeReturnToTop() {
+    // Create return to top button
+    const returnToTopBtn = document.createElement('button');
+    returnToTopBtn.className = 'return-to-top';
+    returnToTopBtn.setAttribute('aria-label', 'Return to top');
+    returnToTopBtn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    `;
+    
+    // Add button to body
+    document.body.appendChild(returnToTopBtn);
+    
+    // Show/hide button based on scroll position
+    function toggleReturnToTop() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // Show button when scrolled down more than 300px or 20% of page height
+        const threshold = Math.max(300, documentHeight * 0.2);
+        
+        if (scrollTop > threshold) {
+            returnToTopBtn.classList.add('visible');
+        } else {
+            returnToTopBtn.classList.remove('visible');
+        }
+    }
+    
+    // Smooth scroll to top
+    function scrollToTop() {
+        // Use smooth scrolling if supported
+        if ('scrollBehavior' in document.documentElement.style) {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        } else {
+            // Fallback for older browsers
+            const scrollStep = -window.scrollY / (500 / 15);
+            const scrollInterval = setInterval(function() {
+                if (window.scrollY !== 0) {
+                    window.scrollBy(0, scrollStep);
+                } else {
+                    clearInterval(scrollInterval);
+                }
+            }, 15);
+        }
+    }
+    
+    // Add event listeners
+    window.addEventListener('scroll', debounce(toggleReturnToTop, 100));
+    returnToTopBtn.addEventListener('click', scrollToTop);
+    
+    // Keyboard support
+    returnToTopBtn.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            scrollToTop();
+        }
+    });
+    
+    // Initial check
+    toggleReturnToTop();
+    
+    console.log('Return to Top system initialized');
+}
