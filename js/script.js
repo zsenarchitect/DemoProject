@@ -1438,6 +1438,63 @@ function initializeCADCrosshair() {
     // Also try on window load as backup
     window.addEventListener('load', init);
 }
+
+// Hide CAD crosshair overlays when interacting with Enscape viewer
+function setupEnscapeViewerCrosshairHiding() {
+    function hideCrosshairOverlays() {
+        try {
+            const overlay = document.querySelector('.cad-crosshair-overlay');
+            const grid = document.getElementById('cad-grid-overlay');
+            const coords = document.getElementById('cad-coord-display');
+            if (overlay) overlay.style.display = 'none';
+            if (grid) grid.style.display = 'none';
+            if (coords) coords.style.visibility = 'hidden';
+        } catch (_) { /* noop */ }
+    }
+
+    function showCrosshairOverlays() {
+        try {
+            const overlay = document.querySelector('.cad-crosshair-overlay');
+            const grid = document.getElementById('cad-grid-overlay');
+            const coords = document.getElementById('cad-coord-display');
+            if (overlay) overlay.style.display = 'block';
+            if (grid) grid.style.display = 'block';
+            if (coords) coords.style.visibility = 'visible';
+        } catch (_) { /* noop */ }
+    }
+
+    function bind(container) {
+        if (!container) return;
+        const iframe = container.querySelector('iframe');
+        const targets = [container, iframe].filter(Boolean);
+
+        targets.forEach(function(el) {
+            el.addEventListener('mouseenter', hideCrosshairOverlays);
+            el.addEventListener('pointerdown', hideCrosshairOverlays);
+            el.addEventListener('focus', hideCrosshairOverlays, true);
+            el.addEventListener('mouseleave', showCrosshairOverlays);
+            el.addEventListener('blur', showCrosshairOverlays, true);
+        });
+    }
+
+    function initBinding() {
+        const container = document.querySelector('.walkthru-container');
+        if (container) {
+            bind(container);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBinding);
+    } else {
+        initBinding();
+    }
+
+    window.addEventListener('load', initBinding);
+}
+
+// Initialize suppression so crosshairs disappear over Enscape viewer
+try { setupEnscapeViewerCrosshairHiding(); } catch (_) { /* noop */ }
 // Bottom HUD assembly: align XY, search bar, and return-to-top button
 function setupBottomHud() {
     const coordDisplay = document.getElementById('cad-coord-display');
