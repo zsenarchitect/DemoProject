@@ -40,5 +40,16 @@ Thumbs.db
 # GitHub Pages
 .github/
 
-# Note: Large files are now handled by Git LFS
+# Large files (prevent files > 30MB from being committed)
+*.rvt
+*.exe
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.zip
+*.rar
+*.7z
+
+# Note: Large files should use Git LFS or external storage
 # These directories contain LFS-tracked files
