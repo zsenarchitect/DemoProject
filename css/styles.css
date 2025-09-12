@@ -892,6 +892,143 @@ body.cad-cursor {
     align-self: flex-end;
 }
 
+/* Side Navigation Mobile Button */
+.side-nav-mobile-btn {
+    display: none;
+    background: var(--accent-primary);
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-height: 48px;
+    position: sticky;
+    top: var(--spacing-md);
+    z-index: 1001;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.side-nav-mobile-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.side-nav-mobile-btn:active {
+    transform: translateY(0);
+}
+
+.side-nav-mobile-btn.active {
+    background: var(--accent-hover);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+.side-nav-mobile-btn svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.side-nav-mobile-btn[aria-expanded="true"] svg {
+    transform: rotate(90deg);
+}
+
+/* Side Navigation Close Button */
+.side-nav-close-btn {
+    display: none;
+    background: var(--accent-primary);
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    min-width: 48px;
+    min-height: 48px;
+    margin-bottom: var(--spacing-lg);
+    align-self: flex-end;
+    position: sticky;
+    top: var(--spacing-md);
+    z-index: 1002;
+}
+
+.side-nav-close-btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.05);
+}
+
+.side-nav-close-btn svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.side-nav-close-btn:hover svg {
+    transform: rotate(90deg);
+}
+
+/* Side Navigation Floating Action Button */
+.side-nav-fab {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 20px;
+    width: 56px;
+    height: 56px;
+    background: var(--accent-primary);
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.side-nav-fab:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+}
+
+.side-nav-fab:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.side-nav-fab.active {
+    background: var(--accent-hover);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+    transform: rotate(45deg);
+}
+
+.side-nav-fab svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.side-nav-fab[aria-expanded="true"] svg {
+    transform: rotate(45deg);
+}
+
 .mobile-close-btn:hover {
     background: var(--accent-hover);
     transform: scale(1.05);
@@ -910,13 +1047,34 @@ body.cad-cursor {
 /* Responsive Design */
 @media (max-width: 768px) {
     .side-nav {
-        position: relative;
-        left: auto;
-        top: auto;
+        position: fixed;
+        left: -100%;
+        top: 0;
         transform: none;
-        width: 100%;
-        margin-bottom: var(--spacing-xl);
-        border-radius: var(--radius-lg);
+        width: 280px;
+        height: 100vh;
+        margin-bottom: 0;
+        border-radius: 0;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+        border-right: 1px solid var(--bg-tertiary);
+    }
+
+    .side-nav.mobile-open {
+        left: 0;
+    }
+    
+    /* Mobile backdrop for side navigation */
+    .side-nav.mobile-open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
     }
 
     .main-content {
@@ -926,6 +1084,23 @@ body.cad-cursor {
     /* Show mobile menu button on mobile */
     .mobile-menu-btn {
         display: block;
+    }
+    
+    /* Show side navigation mobile button on mobile */
+    .side-nav-mobile-btn {
+        display: flex;
+    }
+    
+    /* Show side navigation close button when side nav is open */
+    .side-nav.mobile-open .side-nav-close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Show floating action button on mobile */
+    .side-nav-fab {
+        display: flex;
     }
     
     /* Hide hamburger menu on mobile (use mobile menu instead) */
