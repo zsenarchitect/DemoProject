@@ -694,14 +694,13 @@ function initializeResponsiveMenu() {
     // Check if this is the presentation page (has side navigation)
     const isPresentationPage = document.querySelector('.side-nav') !== null;
     
-    // Create hamburger menu for all pages except landing page
+    // Create navigation menu button for all pages except landing page
     if (!isLandingPage) {
-        createHamburgerMenu();
-    }
-    
-    // Create mobile menu button if on mobile (for all pages)
-    if (window.innerWidth <= 768) {
-        createMobileMenu();
+        if (window.innerWidth <= 768) {
+            createMobileMenu();
+        } else {
+            createHamburgerMenu();
+        }
     }
     
     // Create side navigation mobile button for presentation page
@@ -711,10 +710,16 @@ function initializeResponsiveMenu() {
 
     // Use debounced resize handler for better performance
     const debouncedResize = debounce(function() {
-        if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-btn')) {
-            createMobileMenu();
-        } else if (window.innerWidth > 768 && document.querySelector('.mobile-menu-btn')) {
-            removeMobileMenu();
+        if (!isLandingPage) {
+            if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-btn')) {
+                // Switch to mobile menu
+                removeHamburgerMenu();
+                createMobileMenu();
+            } else if (window.innerWidth > 768 && !document.querySelector('.hamburger-menu-btn')) {
+                // Switch to hamburger menu
+                removeMobileMenu();
+                createHamburgerMenu();
+            }
         }
         
         // Handle side navigation mobile button
@@ -1359,21 +1364,6 @@ function initializeCADCrosshair() {
         // Add coordinate display
         const coordDisplay = document.createElement('div');
         coordDisplay.id = 'cad-coord-display';
-        coordDisplay.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--accent-border);
-            border-radius: var(--radius-md);
-            padding: var(--spacing-sm) var(--spacing-md);
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-md);
-        `;
         coordDisplay.innerHTML = 'X: 0, Y: 0';
         document.body.appendChild(coordDisplay);
 
@@ -1490,7 +1480,7 @@ function initializeCADCrosshair() {
 // Sheet Enlargement and Annotation System
 function initializeSheetEnlargement() {
     const sheetModal = document.getElementById('sheetModal');
-    const sheetModalImage = document.getElementById('sheetModalImage');
+    const sheetBaseCanvas = document.getElementById('sheetBaseCanvas');
     const sheetModalTitle = document.getElementById('sheetModalTitle');
     const closeSheetModalBtn = document.getElementById('closeSheetModal');
     const penModeModalBtn = document.getElementById('penModeModalBtn');
@@ -1505,6 +1495,9 @@ function initializeSheetEnlargement() {
     let currentTool = 'pen';
     let lastX = 0;
     let lastY = 0;
+    let currentImage = null;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
 
     // Initialize sheet modal pen mode
     function initializeSheetPenMode() {
@@ -1647,26 +1640,21 @@ function initializeSheetEnlargement() {
 
         // Download annotated version
         function downloadAnnotatedSheet() {
+            if (!currentImage) return;
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            const img = sheetModalImage;
             
-            // Set canvas size to match image
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
+            // Set canvas size to match original image resolution
+            canvas.width = imageNaturalWidth;
+            canvas.height = imageNaturalHeight;
             
-            // Draw the original image
-            ctx.drawImage(img, 0, 0);
+            // Draw the original image at full resolution
+            ctx.drawImage(currentImage, 0, 0, imageNaturalWidth, imageNaturalHeight);
             
-            // Draw annotations on top
+            // Draw annotations on top scaled to match
             const annotationCanvas = sheetDrawingCanvas;
-            const annotationCtx = annotationCanvas.getContext('2d');
-            const annotationData = annotationCtx.getImageData(0, 0, annotationCanvas.width, annotationCanvas.height);
-            
-            // Scale annotations to match image size
-            const scaleX = img.naturalWidth / annotationCanvas.width;
-            const scaleY = img.naturalHeight / annotationCanvas.height;
-            
+            const scaleX = imageNaturalWidth / annotationCanvas.width;
+            const scaleY = imageNaturalHeight / annotationCanvas.height;
             ctx.save();
             ctx.scale(scaleX, scaleY);
             ctx.drawImage(annotationCanvas, 0, 0);
@@ -1675,7 +1663,7 @@ function initializeSheetEnlargement() {
             // Download the result
             const link = document.createElement('a');
             link.download = `annotated_${currentSheetId}.png`;
-            link.href = canvas.toDataURL();
+            link.href = canvas.toDataURL('image/png');
             link.click();
         }
 
@@ -1728,16 +1716,48 @@ function initializeSheetEnlargement() {
     // Open sheet modal
     function openSheetModal(sheetSrc, sheetTitle, sheetId) {
         currentSheetId = sheetId;
-        sheetModalImage.src = sheetSrc;
         sheetModalTitle.textContent = sheetTitle;
         sheetModal.style.display = 'flex';
         isSheetModalOpen = true;
         
-        // Initialize pen mode for this sheet
-        initializeSheetPenMode();
+        // Load the image and draw onto base canvas
+        const img = new Image();
+        img.onload = function() {
+            currentImage = img;
+            imageNaturalWidth = img.naturalWidth;
+            imageNaturalHeight = img.naturalHeight;
+            drawBaseImage();
+            // Initialize pen mode for this sheet
+            initializeSheetPenMode();
+        };
+        img.src = sheetSrc;
         
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
+    }
+
+    function drawBaseImage() {
+        if (!sheetBaseCanvas || !currentImage) return;
+        const container = sheetBaseCanvas.parentElement;
+        const ctx = sheetBaseCanvas.getContext('2d');
+        // Set canvas pixel size to container size
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+        sheetBaseCanvas.width = width;
+        sheetBaseCanvas.height = height;
+        
+        // Clear
+        ctx.clearRect(0, 0, width, height);
+        
+        // Compute contain fit
+        const scale = Math.min(width / imageNaturalWidth, height / imageNaturalHeight);
+        const drawW = imageNaturalWidth * scale;
+        const drawH = imageNaturalHeight * scale;
+        const dx = (width - drawW) / 2;
+        const dy = (height - drawH) / 2;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(currentImage, dx, dy, drawW, drawH);
     }
 
     // Close sheet modal
@@ -1786,11 +1806,24 @@ function initializeSheetEnlargement() {
 
     // Handle window resize
     window.addEventListener('resize', function() {
+        if (!isSheetModalOpen) return;
+        // Redraw base image to fit new size
+        drawBaseImage();
         if (isSheetModalOpen && isSheetPenModeActive) {
             const container = sheetDrawingCanvas.parentElement;
             sheetDrawingCanvas.width = container.offsetWidth;
             sheetDrawingCanvas.height = container.offsetHeight;
-            loadSheetAnnotations();
+            // Reload saved annotations after resizing
+            const savedData = localStorage.getItem(`sheetAnnotations_${currentSheetId}`);
+            if (savedData) {
+                const img = new Image();
+                img.onload = function() {
+                    const ctx = sheetDrawingCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, sheetDrawingCanvas.width, sheetDrawingCanvas.height);
+                    ctx.drawImage(img, 0, 0, sheetDrawingCanvas.width, sheetDrawingCanvas.height);
+                };
+                img.src = savedData;
+            }
         }
     });
 
