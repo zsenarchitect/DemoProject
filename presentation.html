@@ -417,52 +417,6 @@
         </section>
     </main>
 
-    <!-- Pen Mode Interface -->
-    <div id="penModeInterface" class="pen-mode-interface" style="display: none;">
-        <div class="pen-toolbar">
-            <div class="pen-tools">
-                <button id="penTool" class="pen-tool-btn active" title="Pen Tool">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                </button>
-                <button id="eraserTool" class="pen-tool-btn" title="Eraser Tool">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 21h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 3l8 8-8 8-8-8 8-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="pen-controls">
-                <label for="penSize">Size:</label>
-                <input type="range" id="penSize" min="1" max="20" value="3" class="pen-size-slider">
-                <span id="penSizeValue">3</span>
-                <label for="penColor">Color:</label>
-                <input type="color" id="penColor" value="#ff6b35" class="pen-color-picker">
-            </div>
-            <div class="pen-actions">
-                <button id="clearAll" class="pen-action-btn" title="Clear All Annotations">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Clear All
-                </button>
-                <button id="closePenMode" class="pen-action-btn" title="Close Pen Mode">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Drawing Canvas Overlay -->
-    <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
 
     <!-- Sheet Enlargement Modal -->
     <div id="sheetModal" class="sheet-modal" style="display: none;">
@@ -546,6 +500,19 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Search Bar -->
+    <div id="searchContainer" class="search-container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search drawings, renderings, and content..." autocomplete="off">
+            <button id="searchClear" class="search-clear" title="Clear search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
     </div>
 
     <script src="js/script.js"></script>

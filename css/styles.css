@@ -807,49 +807,7 @@ body.cad-cursor {
     box-shadow: var(--shadow-md);
 }
 
-/* Pen Mode Styles */
-.pen-mode-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--bg-tertiary);
-    border: 1px solid var(--accent-border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.pen-mode-btn:hover {
-    background: var(--accent-light);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-accent);
-}
-
-.pen-mode-btn.active {
-    background: var(--accent-primary);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-accent);
-}
-
-.pen-mode-interface {
-    position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-secondary);
-    border: 1px solid var(--accent-border);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-lg);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-    min-width: 400px;
-}
+/* Main pen mode styles removed - only available in sheet enlargement modal */
 
 .pen-toolbar {
     display: flex;
@@ -981,38 +939,7 @@ body.cad-cursor {
     border-color: var(--accent-border);
 }
 
-.drawing-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 999;
-    cursor: crosshair;
-}
-
-.drawing-canvas.active {
-    pointer-events: all;
-}
-
-.drawing-canvas.eraser {
-    cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiNmZjZiMzUiIG9wYWNpdHk9IjAuMyIgc3Ryb2tlPSIjZmY2YjM1IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==') 12 12, auto;
-}
-
-/* Brush Size Indicator */
-#brush-size-indicator {
-    position: fixed;
-    border: 2px solid var(--accent-primary);
-    border-radius: 50%;
-    background: rgba(255, 107, 53, 0.1);
-    pointer-events: none;
-    z-index: 10000;
-    display: none;
-    transform: translate(-50%, -50%);
-    transition: all 0.1s ease;
-    box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
-}
+/* Main drawing canvas and brush indicator styles removed - only available in sheet enlargement modal */
 
 /* Mobile Menu Button */
 .mobile-menu-btn {
@@ -1203,11 +1130,6 @@ body.cad-cursor {
         -webkit-tap-highlight-color: transparent;
     }
 
-    .pen-mode-btn {
-        margin: var(--spacing-xs) 0;
-        min-height: 48px;
-        justify-content: center;
-    }
 
     .gallery {
         grid-template-columns: 1fr;
@@ -1240,14 +1162,6 @@ body.cad-cursor {
         font-size: 2rem;
     }
 
-    .pen-mode-interface {
-        top: 60px;
-        left: 10px;
-        right: 10px;
-        transform: none;
-        min-width: auto;
-        padding: var(--spacing-md);
-    }
 
     .pen-toolbar {
         flex-direction: column;
@@ -1953,5 +1867,185 @@ body.cad-cursor {
     .return-to-top svg {
         width: 20px;
         height: 20px;
+    }
+}
+
+/* Floating Search Bar */
+.search-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+}
+
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+#searchInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: var(--spacing-sm) 0;
+    font-family: 'Inter', sans-serif;
+}
+
+#searchInput::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.search-clear:hover {
+    color: var(--accent-primary);
+    background: var(--accent-light);
+}
+
+.search-clear.visible {
+    display: flex;
+}
+
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    border-top: 1px solid var(--bg-tertiary);
+    display: none;
+}
+
+.search-results.visible {
+    display: block;
+}
+
+.search-result-item {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--bg-tertiary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.search-result-item:hover {
+    background: var(--accent-light);
+    color: var(--accent-primary);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+}
+
+.search-result-content {
+    flex: 1;
+}
+
+.search-result-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+}
+
+.search-result-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.search-result-section {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: var(--spacing-xs);
+}
+
+.search-highlight {
+    background: var(--accent-light);
+    color: var(--accent-primary);
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+.search-no-results {
+    padding: var(--spacing-lg);
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Mobile search adjustments */
+@media (max-width: 768px) {
+    .search-container {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        transform: none;
+        width: auto;
+        max-width: none;
+    }
+    
+    .search-bar {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    #searchInput {
+        font-size: 0.9rem;
+    }
+    
+    .search-results {
+        max-height: 300px;
+    }
+    
+    .search-result-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .search-result-title {
+        font-size: 0.9rem;
+    }
+    
+    .search-result-description {
+        font-size: 0.8rem;
     }
 }

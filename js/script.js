@@ -9,17 +9,20 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeResponsiveMenu();
     initializeCADCrosshair();
     
-    // Only initialize pen mode if the elements exist
-    if (document.getElementById('penModeBtn')) {
-        initializePenMode();
-    }
+    // Main pen mode removed - only available in sheet enlargement modal
     
     // Only initialize sheet enlargement if the elements exist
     if (document.getElementById('sheetModal')) {
         initializeSheetEnlargement();
     }
     
+    // Initialize download functionality
+    initializeDownloadFunctionality();
+    
     initializeReturnToTop();
+    
+    // Initialize search functionality
+    initializeSearchFunctionality();
 });
 
 // Navigation functionality
@@ -815,7 +818,7 @@ function createMobileMenu() {
     });
 
     // Close menu when clicking a link
-    const navLinks = navList.querySelectorAll('.nav-link, .pen-mode-btn');
+    const navLinks = navList.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             closeMenu();
@@ -934,7 +937,7 @@ function createHamburgerMenu() {
     });
 
     // Close menu when clicking a link
-    const navLinks = navList.querySelectorAll('.nav-link, .pen-mode-btn');
+    const navLinks = navList.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             closeMenu();
@@ -1242,278 +1245,7 @@ function initializeCADCrosshair() {
     window.addEventListener('load', init);
 }
 
-// Pen Mode functionality
-function initializePenMode() {
-    const penModeBtn = document.getElementById('penModeBtn');
-    const penModeInterface = document.getElementById('penModeInterface');
-    const drawingCanvas = document.getElementById('drawingCanvas');
-    const penTool = document.getElementById('penTool');
-    const eraserTool = document.getElementById('eraserTool');
-    const penSize = document.getElementById('penSize');
-    const penSizeValue = document.getElementById('penSizeValue');
-    const penColor = document.getElementById('penColor');
-    const clearAll = document.getElementById('clearAll');
-    const closePenMode = document.getElementById('closePenMode');
-
-    let isPenModeActive = false;
-    let isDrawing = false;
-    let currentTool = 'pen';
-    let lastX = 0;
-    let lastY = 0;
-    let brushSizeIndicator = null;
-
-    // Initialize canvas
-    function initCanvas() {
-        const ctx = drawingCanvas.getContext('2d');
-        // Set canvas size to match the entire document
-        drawingCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
-        drawingCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-        
-        // Set default drawing properties
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.globalCompositeOperation = 'source-over';
-        
-        // Create brush size indicator
-        createBrushSizeIndicator();
-        
-        // Load saved annotations
-        loadAnnotations();
-    }
-
-    // Create brush size indicator
-    function createBrushSizeIndicator() {
-        if (brushSizeIndicator) {
-            brushSizeIndicator.remove();
-        }
-        
-        brushSizeIndicator = document.createElement('div');
-        brushSizeIndicator.id = 'brush-size-indicator';
-        brushSizeIndicator.style.cssText = `
-            position: fixed;
-            width: ${parseInt(penSize.value) * 2}px;
-            height: ${parseInt(penSize.value) * 2}px;
-            border: 2px solid var(--accent-primary);
-            border-radius: 50%;
-            background: rgba(255, 107, 53, 0.1);
-            pointer-events: none;
-            z-index: 10000;
-            display: none;
-            transform: translate(-50%, -50%);
-            transition: all 0.1s ease;
-        `;
-        document.body.appendChild(brushSizeIndicator);
-    }
-
-    // Update brush size indicator
-    function updateBrushSizeIndicator(e) {
-        if (!isPenModeActive || !brushSizeIndicator) return;
-        
-        const size = parseInt(penSize.value);
-        brushSizeIndicator.style.width = `${size * 2}px`;
-        brushSizeIndicator.style.height = `${size * 2}px`;
-        brushSizeIndicator.style.left = e.clientX + 'px';
-        brushSizeIndicator.style.top = e.clientY + 'px';
-        brushSizeIndicator.style.display = 'block';
-    }
-
-    // Hide brush size indicator
-    function hideBrushSizeIndicator() {
-        if (brushSizeIndicator) {
-            brushSizeIndicator.style.display = 'none';
-        }
-    }
-
-    // Toggle pen mode
-    function togglePenMode() {
-        isPenModeActive = !isPenModeActive;
-        
-        if (isPenModeActive) {
-            penModeInterface.style.display = 'block';
-            drawingCanvas.classList.add('active');
-            penModeBtn.classList.add('active');
-            initCanvas();
-        } else {
-            penModeInterface.style.display = 'none';
-            drawingCanvas.classList.remove('active');
-            drawingCanvas.classList.remove('eraser');
-            penModeBtn.classList.remove('active');
-        }
-    }
-
-    // Switch between pen and eraser tools
-    function switchTool(tool) {
-        currentTool = tool;
-        const ctx = drawingCanvas.getContext('2d');
-        
-        if (tool === 'pen') {
-            penTool.classList.add('active');
-            eraserTool.classList.remove('active');
-            drawingCanvas.classList.remove('eraser');
-            ctx.globalCompositeOperation = 'source-over';
-        } else if (tool === 'eraser') {
-            eraserTool.classList.add('active');
-            penTool.classList.remove('active');
-            drawingCanvas.classList.add('eraser');
-            ctx.globalCompositeOperation = 'destination-out';
-        }
-    }
-
-    // Start drawing
-    function startDrawing(e) {
-        if (!isPenModeActive) return;
-        
-        isDrawing = true;
-        // Use page coordinates instead of canvas-relative coordinates
-        lastX = e.pageX;
-        lastY = e.pageY;
-        
-        const ctx = drawingCanvas.getContext('2d');
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-    }
-
-    // Draw
-    function draw(e) {
-        if (!isDrawing || !isPenModeActive) return;
-        
-        // Use page coordinates for consistent positioning
-        const currentX = e.pageX;
-        const currentY = e.pageY;
-        
-        const ctx = drawingCanvas.getContext('2d');
-        ctx.strokeStyle = currentTool === 'pen' ? penColor.value : 'rgba(0,0,0,0)';
-        ctx.lineWidth = parseInt(penSize.value);
-        
-        ctx.lineTo(currentX, currentY);
-        ctx.stroke();
-        
-        lastX = currentX;
-        lastY = currentY;
-        
-        // Save to localStorage
-        saveAnnotations();
-    }
-
-    // Stop drawing
-    function stopDrawing() {
-        if (!isDrawing) return;
-        
-        isDrawing = false;
-        const ctx = drawingCanvas.getContext('2d');
-        ctx.beginPath();
-    }
-
-    // Clear all annotations
-    function clearAllAnnotations() {
-        const ctx = drawingCanvas.getContext('2d');
-        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-        localStorage.removeItem('penAnnotations');
-    }
-
-    // Save annotations to localStorage
-    function saveAnnotations() {
-        const dataURL = drawingCanvas.toDataURL();
-        localStorage.setItem('penAnnotations', dataURL);
-    }
-
-    // Load annotations from localStorage
-    function loadAnnotations() {
-        const savedData = localStorage.getItem('penAnnotations');
-        if (savedData) {
-            const img = new Image();
-            img.onload = function() {
-                const ctx = drawingCanvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-            };
-            img.src = savedData;
-        }
-    }
-
-    // Update pen size display
-    function updatePenSizeDisplay() {
-        penSizeValue.textContent = penSize.value;
-        // Update brush indicator size
-        if (brushSizeIndicator) {
-            const size = parseInt(penSize.value);
-            brushSizeIndicator.style.width = `${size * 2}px`;
-            brushSizeIndicator.style.height = `${size * 2}px`;
-        }
-    }
-
-    // Handle window resize
-    function handleResize() {
-        if (isPenModeActive) {
-            const ctx = drawingCanvas.getContext('2d');
-            const currentData = ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
-            
-            // Update canvas size to match document dimensions
-            drawingCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
-            drawingCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-            
-            ctx.putImageData(currentData, 0, 0);
-        }
-    }
-
-    // Event listeners
-    penModeBtn.addEventListener('click', togglePenMode);
-    penTool.addEventListener('click', () => switchTool('pen'));
-    eraserTool.addEventListener('click', () => switchTool('eraser'));
-    penSize.addEventListener('input', updatePenSizeDisplay);
-    clearAll.addEventListener('click', clearAllAnnotations);
-    closePenMode.addEventListener('click', togglePenMode);
-
-    // Drawing events
-    drawingCanvas.addEventListener('mousedown', startDrawing);
-    drawingCanvas.addEventListener('mousemove', draw);
-    drawingCanvas.addEventListener('mouseup', stopDrawing);
-    drawingCanvas.addEventListener('mouseout', stopDrawing);
-
-    // Mouse move for brush indicator
-    document.addEventListener('mousemove', function(e) {
-        if (isPenModeActive) {
-            updateBrushSizeIndicator(e);
-        }
-    });
-
-    // Hide brush indicator when mouse leaves the page
-    document.addEventListener('mouseleave', hideBrushSizeIndicator);
-
-    // Touch events for mobile
-    drawingCanvas.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        drawingCanvas.dispatchEvent(mouseEvent);
-    });
-
-    drawingCanvas.addEventListener('touchmove', function(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        drawingCanvas.dispatchEvent(mouseEvent);
-    });
-
-    drawingCanvas.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        const mouseEvent = new MouseEvent('mouseup', {});
-        drawingCanvas.dispatchEvent(mouseEvent);
-    });
-
-    // Window resize handler
-    window.addEventListener('resize', handleResize);
-
-    // Initialize pen size display
-    updatePenSizeDisplay();
-
-    console.log('Pen Mode system initialized');
-}
+// Main pen mode functionality removed - only available in sheet enlargement modal
 
 // Sheet Enlargement and Annotation System
 function initializeSheetEnlargement() {
@@ -1896,4 +1628,553 @@ function initializeReturnToTop() {
     toggleReturnToTop();
     
     console.log('Return to Top system initialized');
+}
+
+// Download functionality for renderings and PDF
+function initializeDownloadFunctionality() {
+    const downloadRenderingsBtn = document.getElementById('downloadRenderingsBtn');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    
+    if (!downloadRenderingsBtn && !downloadPdfBtn) {
+        console.log('Download buttons not found');
+        return;
+    }
+    
+    // List of all rendering images
+    const renderingImages = [
+        'rendering/Villa_Bedroom - Video Texture.png',
+        'rendering/Villa_Counter.png',
+        'rendering/Villa_Entrance.png',
+        'rendering/Villa_Exterior - Nightime.png',
+        'rendering/Villa_Exterior_01.png',
+        'rendering/Villa_Exterior_02.png',
+        'rendering/Villa_Exterior.png',
+        'rendering/Villa_Fireplace.png',
+        'rendering/Villa_Interior_01.png',
+        'rendering/Villa_Interior_02.png',
+        'rendering/Villa_Interior_03.png',
+        'rendering/Villa_Interior_04.png',
+        'rendering/Villa_Interior_05.png',
+        'rendering/Villa_Kitchen 2.png',
+        'rendering/Villa_Kitchen.png',
+        'rendering/Villa_Living Room.png',
+        'rendering/Villa_Office - White Mode.png'
+    ];
+    
+    // Function to download a single image
+    function downloadImage(imagePath, filename) {
+        try {
+            const link = document.createElement('a');
+            link.href = imagePath;
+            link.download = filename;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            console.log(`Downloaded: ${filename}`);
+        } catch (error) {
+            console.error(`Error downloading ${filename}:`, error);
+        }
+    }
+    
+    // Function to download all renderings as a ZIP file
+    async function downloadAllRenderings() {
+        // Check if JSZip is available
+        if (typeof JSZip === 'undefined') {
+            console.error('JSZip library not loaded');
+            showDownloadError('ZIP library not available. Please refresh the page and try again.');
+            return;
+        }
+
+        // Show loading state
+        const originalText = downloadRenderingsBtn.innerHTML;
+        downloadRenderingsBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="margin-right: var(--spacing-sm);" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Creating ZIP...
+        `;
+        downloadRenderingsBtn.disabled = true;
+
+        try {
+            // Create a new JSZip instance
+            const zip = new JSZip();
+            
+            // Create a folder for the renderings
+            const renderingsFolder = zip.folder("High-Resolution_Renderings");
+            
+            // Track progress
+            let loadedCount = 0;
+            const totalImages = renderingImages.length;
+            
+            // Function to update progress
+            function updateProgress() {
+                const progress = Math.round((loadedCount / totalImages) * 100);
+                downloadRenderingsBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="margin-right: var(--spacing-sm);" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Creating ZIP... ${progress}%
+                `;
+            }
+
+            // Load all images and add them to the ZIP
+            const imagePromises = renderingImages.map(async (imagePath, index) => {
+                try {
+                    // Fetch the image as a blob
+                    const response = await fetch(imagePath);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch ${imagePath}: ${response.status}`);
+                    }
+                    
+                    const blob = await response.blob();
+                    const filename = imagePath.split('/').pop();
+                    
+                    // Add the image to the ZIP
+                    renderingsFolder.file(filename, blob);
+                    
+                    loadedCount++;
+                    updateProgress();
+                    
+                    console.log(`Added to ZIP: ${filename} (${loadedCount}/${totalImages})`);
+                    
+                    return { success: true, filename };
+                } catch (error) {
+                    console.error(`Error loading ${imagePath}:`, error);
+                    return { success: false, filename: imagePath.split('/').pop(), error };
+                }
+            });
+
+            // Wait for all images to be loaded
+            const results = await Promise.all(imagePromises);
+            
+            // Check if any images failed to load
+            const failedImages = results.filter(result => !result.success);
+            if (failedImages.length > 0) {
+                console.warn(`${failedImages.length} images failed to load:`, failedImages);
+            }
+
+            // Generate the ZIP file
+            downloadRenderingsBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="margin-right: var(--spacing-sm);" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Generating ZIP...
+            `;
+
+            const zipBlob = await zip.generateAsync({ type: "blob" });
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(zipBlob);
+            link.download = `High-Resolution_Renderings_${new Date().toISOString().split('T')[0]}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Clean up the object URL
+            URL.revokeObjectURL(link.href);
+            
+            // Reset button
+            downloadRenderingsBtn.innerHTML = originalText;
+            downloadRenderingsBtn.disabled = false;
+            
+            // Show success message
+            const successMessage = failedImages.length > 0 
+                ? `ZIP downloaded! (${totalImages - failedImages.length}/${totalImages} images included)`
+                : `ZIP downloaded successfully! (${totalImages} images included)`;
+            showDownloadSuccess(successMessage);
+            
+            console.log('ZIP file created and downloaded successfully');
+            
+        } catch (error) {
+            console.error('Error creating ZIP file:', error);
+            
+            // Reset button
+            downloadRenderingsBtn.innerHTML = originalText;
+            downloadRenderingsBtn.disabled = false;
+            
+            // Show error message
+            showDownloadError('Failed to create ZIP file. Please try again.');
+        }
+    }
+    
+    // Function to show download success message
+    function showDownloadSuccess(message = 'All renderings downloaded successfully!') {
+        const successMsg = document.createElement('div');
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-primary);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            font-weight: 500;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+        successMsg.innerHTML = `
+            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ${message}
+            </div>
+        `;
+        
+        document.body.appendChild(successMsg);
+        
+        // Animate in
+        setTimeout(() => {
+            successMsg.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            successMsg.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (successMsg.parentNode) {
+                    successMsg.parentNode.removeChild(successMsg);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Function to download PDF
+    function downloadPDF() {
+        if (!downloadPdfBtn) return;
+        
+        // Show loading state
+        const originalText = downloadPdfBtn.innerHTML;
+        downloadPdfBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="margin-right: var(--spacing-sm);" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Downloading...
+        `;
+        downloadPdfBtn.disabled = true;
+        
+        // Try different URL formats for the PDF
+        const pdfPaths = [
+            'download%20content/Floor%20Plan-combined.pdf',
+            'download content/Floor Plan-combined.pdf',
+            'download content/Floor%20Plan-combined.pdf'
+        ];
+        
+        let downloadAttempted = false;
+        
+        pdfPaths.forEach((path, index) => {
+            if (downloadAttempted) return;
+            
+            setTimeout(() => {
+                try {
+                    const link = document.createElement('a');
+                    link.href = path;
+                    link.download = 'Floor Plan-combined.pdf';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    downloadAttempted = true;
+                    console.log(`PDF download attempted with path: ${path}`);
+                    
+                    // Reset button after download attempt
+                    setTimeout(() => {
+                        downloadPdfBtn.innerHTML = originalText;
+                        downloadPdfBtn.disabled = false;
+                        
+                        // Show success message
+                        showDownloadSuccess('PDF downloaded successfully!');
+                    }, 1000);
+                } catch (error) {
+                    console.error(`Error downloading PDF with path ${path}:`, error);
+                }
+            }, index * 500);
+        });
+    }
+    
+    // Add event listeners
+    if (downloadRenderingsBtn) {
+        downloadRenderingsBtn.addEventListener('click', downloadAllRenderings);
+    }
+    
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', downloadPDF);
+    }
+    
+    console.log('Download functionality initialized');
+    console.log('PDF download button found:', !!downloadPdfBtn);
+    console.log('Renderings download button found:', !!downloadRenderingsBtn);
+}
+
+// Search Functionality
+function initializeSearchFunctionality() {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const searchClear = document.getElementById('searchClear');
+    
+    if (!searchInput || !searchResults || !searchClear) {
+        console.log('Search elements not found');
+        return;
+    }
+    
+    let searchTimeout;
+    let currentResults = [];
+    
+    // Search data structure
+    const searchData = [];
+    
+    // Initialize search data from page content
+    function initializeSearchData() {
+        // Clear existing data
+        searchData.length = 0;
+        
+        // Search through all sections and their content
+        const sections = document.querySelectorAll('section[id]');
+        
+        sections.forEach(section => {
+            const sectionId = section.id;
+            const sectionTitle = section.querySelector('h2')?.textContent || '';
+            
+            // Get all gallery items in this section
+            const galleryItems = section.querySelectorAll('.gallery-item');
+            
+            galleryItems.forEach(item => {
+                const title = item.querySelector('h4')?.textContent || '';
+                const description = item.querySelector('p')?.textContent || '';
+                const img = item.querySelector('img');
+                const imgSrc = img?.src || '';
+                const imgAlt = img?.alt || '';
+                
+                if (title || description) {
+                    searchData.push({
+                        type: 'gallery-item',
+                        section: sectionId,
+                        sectionTitle: sectionTitle,
+                        title: title,
+                        description: description,
+                        imgSrc: imgSrc,
+                        imgAlt: imgAlt,
+                        element: item,
+                        searchText: `${title} ${description} ${imgAlt}`.toLowerCase()
+                    });
+                }
+            });
+            
+            // Also add section titles as searchable items
+            if (sectionTitle) {
+                searchData.push({
+                    type: 'section',
+                    section: sectionId,
+                    sectionTitle: sectionTitle,
+                    title: sectionTitle,
+                    description: `Navigate to ${sectionTitle} section`,
+                    element: section,
+                    searchText: sectionTitle.toLowerCase()
+                });
+            }
+        });
+        
+        console.log(`Search data initialized with ${searchData.length} items`);
+    }
+    
+    // Highlight search terms in text
+    function highlightSearchTerms(text, searchTerm) {
+        if (!searchTerm) return text;
+        
+        const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+    
+    // Get icon for search result type
+    function getSearchResultIcon(type) {
+        const icons = {
+            'gallery-item': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+            </svg>`,
+            'section': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2"/>
+                <polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2"/>
+            </svg>`
+        };
+        return icons[type] || icons['gallery-item'];
+    }
+    
+    // Perform search
+    function performSearch(query) {
+        if (!query || query.length < 2) {
+            hideSearchResults();
+            return;
+        }
+        
+        const searchTerm = query.toLowerCase().trim();
+        const results = searchData.filter(item => 
+            item.searchText.includes(searchTerm)
+        );
+        
+        currentResults = results;
+        displaySearchResults(results, searchTerm);
+    }
+    
+    // Display search results
+    function displaySearchResults(results, searchTerm) {
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                <div class="search-no-results">
+                    No results found for "${searchTerm}"
+                </div>
+            `;
+        } else {
+            searchResults.innerHTML = results.map(item => `
+                <div class="search-result-item" data-type="${item.type}" data-section="${item.section}">
+                    <div class="search-result-icon">
+                        ${getSearchResultIcon(item.type)}
+                    </div>
+                    <div class="search-result-content">
+                        <div class="search-result-title">
+                            ${highlightSearchTerms(item.title, searchTerm)}
+                        </div>
+                        <div class="search-result-description">
+                            ${highlightSearchTerms(item.description, searchTerm)}
+                        </div>
+                        <div class="search-result-section">
+                            ${item.sectionTitle}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        searchResults.classList.add('visible');
+    }
+    
+    // Hide search results
+    function hideSearchResults() {
+        searchResults.classList.remove('visible');
+        currentResults = [];
+    }
+    
+    // Jump to search result
+    function jumpToResult(resultItem) {
+        const type = resultItem.dataset.type;
+        const section = resultItem.dataset.section;
+        
+        if (type === 'section') {
+            // Jump to section
+            const targetSection = document.getElementById(section);
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Update active nav link
+                updateActiveNavLink(`#${section}`);
+            }
+        } else if (type === 'gallery-item') {
+            // Find the corresponding gallery item and jump to it
+            const resultIndex = Array.from(searchResults.children).indexOf(resultItem);
+            if (resultIndex >= 0 && currentResults[resultIndex]) {
+                const targetElement = currentResults[resultIndex].element;
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // Add a temporary highlight effect
+                    targetElement.style.transition = 'all 0.3s ease';
+                    targetElement.style.transform = 'scale(1.02)';
+                    targetElement.style.boxShadow = '0 0 20px rgba(255, 107, 53, 0.5)';
+                    
+                    setTimeout(() => {
+                        targetElement.style.transform = 'scale(1)';
+                        targetElement.style.boxShadow = '';
+                    }, 2000);
+                }
+            }
+        }
+        
+        // Hide search results after jumping
+        hideSearchResults();
+        searchInput.value = '';
+        searchClear.classList.remove('visible');
+    }
+    
+    // Event listeners
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        // Show/hide clear button
+        if (query.length > 0) {
+            searchClear.classList.add('visible');
+        } else {
+            searchClear.classList.remove('visible');
+            hideSearchResults();
+        }
+        
+        // Debounce search
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, 300);
+    });
+    
+    searchInput.addEventListener('focus', function() {
+        if (this.value.trim().length > 0) {
+            searchResults.classList.add('visible');
+        }
+    });
+    
+    searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        searchInput.focus();
+        hideSearchResults();
+        this.classList.remove('visible');
+    });
+    
+    // Click on search results
+    searchResults.addEventListener('click', function(e) {
+        const resultItem = e.target.closest('.search-result-item');
+        if (resultItem) {
+            jumpToResult(resultItem);
+        }
+    });
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-container')) {
+            hideSearchResults();
+        }
+    });
+    
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideSearchResults();
+            this.blur();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const firstResult = searchResults.querySelector('.search-result-item');
+            if (firstResult) {
+                firstResult.focus();
+            }
+        }
+    });
+    
+    // Initialize search data
+    initializeSearchData();
+    
+    console.log('Search functionality initialized');
 }
