@@ -1041,17 +1041,7 @@ function createSideNavMobileButton() {
     // Insert button at the top of main content
     mainContent.insertBefore(sideNavBtn, mainContent.firstChild);
     
-    // Also create a floating action button for better mobile access
-    const fabBtn = document.createElement('button');
-    fabBtn.className = 'side-nav-fab';
-    fabBtn.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    `;
-    fabBtn.setAttribute('aria-label', 'Toggle side navigation');
-    fabBtn.setAttribute('aria-expanded', 'false');
-    document.body.appendChild(fabBtn);
+    // Floating action button (FAB) removed per design request
     
     // Add close button to the beginning of side nav list
     const sideNavList = sideNav.querySelector('.side-nav-list');
@@ -1070,16 +1060,14 @@ function createSideNavMobileButton() {
             sideNav.classList.add('mobile-open');
             sideNavBtn.setAttribute('aria-expanded', 'true');
             sideNavBtn.classList.add('active');
-            fabBtn.setAttribute('aria-expanded', 'true');
-            fabBtn.classList.add('active');
+            // FAB removed
             // Prevent body scroll when side nav is open
             document.body.style.overflow = 'hidden';
         } else {
             sideNav.classList.remove('mobile-open');
             sideNavBtn.setAttribute('aria-expanded', 'false');
             sideNavBtn.classList.remove('active');
-            fabBtn.setAttribute('aria-expanded', 'false');
-            fabBtn.classList.remove('active');
+            // FAB removed
             // Restore body scroll
             document.body.style.overflow = '';
         }
@@ -1110,17 +1098,7 @@ function createSideNavMobileButton() {
         toggleSideNav();
     });
     
-    // FAB button event listeners
-    fabBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleSideNav();
-    });
-    
-    fabBtn.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleSideNav();
-    });
+    // FAB removed; no event listeners
     
     // Close button event listeners
     sideNavCloseBtn.addEventListener('click', function(e) {
@@ -1144,7 +1122,7 @@ function createSideNavMobileButton() {
     
     // Close side nav when clicking outside
     document.addEventListener('click', function(e) {
-        if (isSideNavOpen && !sideNav.contains(e.target) && !sideNavBtn.contains(e.target) && !fabBtn.contains(e.target)) {
+        if (isSideNavOpen && !sideNav.contains(e.target) && !sideNavBtn.contains(e.target)) {
             closeSideNav();
         }
     });
