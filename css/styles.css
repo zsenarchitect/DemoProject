@@ -51,7 +51,7 @@ body {
     line-height: 1.6;
     font-size: 16px;
     overflow-x: hidden;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="16" y1="0" x2="16" y2="32" stroke="%23ff6b35" stroke-width="2"/><line x1="0" y1="16" x2="32" y2="16" stroke="%23ff6b35" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="none" stroke="%23ff6b35" stroke-width="1"/></svg>') 16 16, crosshair;
+    cursor: crosshair;
 }
 
 /* Typography */
@@ -732,9 +732,14 @@ p {
 
 /* CAD crosshair toggle removed - now default cursor */
 
-/* Custom crosshair cursor using SVG */
+/* Custom crosshair cursor using SVG - Enhanced for better compatibility */
 .cad-cursor {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="16" y1="0" x2="16" y2="32" stroke="%23ff6b35" stroke-width="2"/><line x1="0" y1="16" x2="32" y2="16" stroke="%23ff6b35" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="none" stroke="%23ff6b35" stroke-width="1"/></svg>') 16 16, crosshair;
+    cursor: crosshair;
+}
+
+/* Enhanced crosshair cursor with fallback */
+.cad-cursor-enhanced {
+    cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8bGluZSB4MT0iMTYiIHkxPSIwIiB4Mj0iMTYiIHkyPSIzMiIgc3Ryb2tlPSIjZmY2YjM1IiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iMCIgeTE9IjE2IiB4Mj0iMzIiIHkyPSIxNiIgc3Ryb2tlPSIjZmY2YjM1IiBzdHJva2Utd2lkdGg9IjIiLz4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIzIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjZiMzUiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4K') 16 16, crosshair;
 }
 
 /* CAD Grid overlay for better precision */
@@ -992,7 +997,7 @@ body.cad-cursor {
 }
 
 .drawing-canvas.eraser {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="%23ff6b35" opacity="0.3" stroke="%23ff6b35" stroke-width="2"/></svg>') 12 12, auto;
+    cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiNmZjZiMzUiIG9wYWNpdHk9IjAuMyIgc3Ryb2tlPSIjZmY2YjM1IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==') 12 12, auto;
 }
 
 /* Brush Size Indicator */
@@ -1029,24 +1034,50 @@ body.cad-cursor {
     user-select: none;
 }
 
-.mobile-menu-btn:hover {
+/* Hamburger Menu Button - Always visible on non-landing pages */
+.hamburger-menu-btn {
+    display: flex;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--accent-border);
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    margin-left: auto;
+    min-width: 48px;
+    min-height: 48px;
+    z-index: 1001;
+    position: relative;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-menu-btn:hover,
+.hamburger-menu-btn:hover {
     background: var(--accent-light);
     color: var(--accent-primary);
 }
 
-.mobile-menu-btn:active {
+.mobile-menu-btn:active,
+.hamburger-menu-btn:active {
     transform: scale(0.95);
     background: var(--accent-primary);
     color: var(--text-primary);
 }
 
-.mobile-menu-btn svg {
+.mobile-menu-btn svg,
+.hamburger-menu-btn svg {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
 }
 
-.mobile-menu-btn[aria-expanded="true"] svg {
+.mobile-menu-btn[aria-expanded="true"] svg,
+.hamburger-menu-btn[aria-expanded="true"] svg {
     transform: rotate(90deg);
 }
 
@@ -1100,6 +1131,11 @@ body.cad-cursor {
     /* Show mobile menu button on mobile */
     .mobile-menu-btn {
         display: block;
+    }
+    
+    /* Hide hamburger menu on mobile (use mobile menu instead) */
+    .hamburger-menu-btn {
+        display: none;
     }
 
     /* Hide regular nav list on mobile, show mobile version */
@@ -1632,7 +1668,7 @@ body.cad-cursor {
 }
 
 .sheet-drawing-canvas.eraser {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="%23ff6b35" opacity="0.3" stroke="%23ff6b35" stroke-width="2"/></svg>') 12 12, auto;
+    cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiNmZjZiMzUiIG9wYWNpdHk9IjAuMyIgc3Ryb2tlPSIjZmY2YjM1IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==') 12 12, auto;
 }
 
 /* Sheet Modal Pen Mode Interface */

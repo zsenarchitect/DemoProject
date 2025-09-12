@@ -8,8 +8,17 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeScrollEffects();
     initializeResponsiveMenu();
     initializeCADCrosshair();
-    initializePenMode();
-    initializeSheetEnlargement();
+    
+    // Only initialize pen mode if the elements exist
+    if (document.getElementById('penModeBtn')) {
+        initializePenMode();
+    }
+    
+    // Only initialize sheet enlargement if the elements exist
+    if (document.getElementById('sheetModal')) {
+        initializeSheetEnlargement();
+    }
+    
     initializeReturnToTop();
 });
 
@@ -674,7 +683,15 @@ function initializeScrollEffects() {
 
 // Responsive menu functionality
 function initializeResponsiveMenu() {
-    // Create mobile menu button if on mobile
+    // Check if this is the landing page
+    const isLandingPage = document.querySelector('.landing-hero') !== null;
+    
+    // Create hamburger menu for all pages except landing page
+    if (!isLandingPage) {
+        createHamburgerMenu();
+    }
+    
+    // Create mobile menu button if on mobile (for all pages)
     if (window.innerWidth <= 768) {
         createMobileMenu();
     }
@@ -685,6 +702,23 @@ function initializeResponsiveMenu() {
             createMobileMenu();
         } else if (window.innerWidth > 768 && document.querySelector('.mobile-menu-btn')) {
             removeMobileMenu();
+        }
+        
+        // Handle hamburger menu visibility
+        if (!isLandingPage) {
+            if (window.innerWidth <= 768) {
+                // Hide hamburger menu on mobile, show mobile menu instead
+                const hamburgerBtn = document.querySelector('.hamburger-menu-btn');
+                if (hamburgerBtn) {
+                    hamburgerBtn.style.display = 'none';
+                }
+            } else {
+                // Show hamburger menu on desktop
+                const hamburgerBtn = document.querySelector('.hamburger-menu-btn');
+                if (hamburgerBtn) {
+                    hamburgerBtn.style.display = 'flex';
+                }
+            }
         }
     }, 250);
 
@@ -810,6 +844,125 @@ function createMobileMenu() {
     console.log('Mobile menu initialized successfully');
 }
 
+function createHamburgerMenu() {
+    const nav = document.querySelector('.nav');
+    const navList = document.querySelector('.nav-list');
+
+    // Check if hamburger menu button already exists
+    if (document.querySelector('.hamburger-menu-btn')) {
+        return;
+    }
+
+    // Create hamburger menu button
+    const hamburgerBtn = document.createElement('button');
+    hamburgerBtn.className = 'hamburger-menu-btn';
+    hamburgerBtn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    `;
+    hamburgerBtn.setAttribute('aria-label', 'Toggle navigation menu');
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+
+    // Add close button to hamburger menu
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'mobile-close-btn';
+    closeBtn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    `;
+    closeBtn.setAttribute('aria-label', 'Close navigation menu');
+
+    // Insert button before nav-list
+    navList.parentNode.insertBefore(hamburgerBtn, navList);
+
+    // Add close button to the beginning of nav list
+    navList.insertBefore(closeBtn, navList.firstChild);
+
+    // Toggle hamburger menu
+    let isOpen = false;
+    
+    function toggleMenu() {
+        isOpen = !isOpen;
+        console.log('Hamburger menu toggled:', isOpen ? 'open' : 'closed');
+        if (isOpen) {
+            navList.classList.add('mobile-open');
+            hamburgerBtn.setAttribute('aria-expanded', 'true');
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = 'hidden';
+        } else {
+            navList.classList.remove('mobile-open');
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }
+    }
+
+    function closeMenu() {
+        if (isOpen) {
+            isOpen = false;
+            navList.classList.remove('mobile-open');
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Add event listeners
+    hamburgerBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    // Touch support for mobile
+    hamburgerBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    // Close button event listeners
+    closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeMenu();
+    });
+
+    closeBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMenu();
+    });
+
+    // Close menu when clicking a link
+    const navLinks = navList.querySelectorAll('.nav-link, .pen-mode-btn');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            closeMenu();
+        });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (isOpen && !nav.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) {
+            closeMenu();
+        }
+    });
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', function() {
+        setTimeout(closeMenu, 100);
+    });
+
+    console.log('Hamburger menu initialized successfully');
+}
+
 function removeMobileMenu() {
     const mobileBtn = document.querySelector('.mobile-menu-btn');
     const closeBtn = document.querySelector('.mobile-close-btn');
@@ -817,6 +970,26 @@ function removeMobileMenu() {
 
     if (mobileBtn) {
         mobileBtn.remove();
+    }
+    if (closeBtn) {
+        closeBtn.remove();
+    }
+    if (navList) {
+        navList.classList.remove('mobile-open');
+        navList.style.cssText = '';
+    }
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
+
+function removeHamburgerMenu() {
+    const hamburgerBtn = document.querySelector('.hamburger-menu-btn');
+    const closeBtn = document.querySelector('.mobile-close-btn');
+    const navList = document.querySelector('.nav-list');
+
+    if (hamburgerBtn) {
+        hamburgerBtn.remove();
     }
     if (closeBtn) {
         closeBtn.remove();
@@ -892,6 +1065,7 @@ if (document.querySelector('.gallery')) {
 // CAD Crosshair functionality - Default Mode
 function initializeCADCrosshair() {
     let crosshairOverlay = null;
+    let isInitialized = false;
 
     // Create crosshair overlay
     function createCrosshairOverlay() {
@@ -989,27 +1163,83 @@ function initializeCADCrosshair() {
 
     // Initialize CAD crosshair system
     function init() {
-        createCrosshairOverlay();
-        createGridOverlay();
-        
-        // Show overlays immediately
-        crosshairOverlay.style.display = 'block';
-        const gridOverlay = document.getElementById('cad-grid-overlay');
-        if (gridOverlay) {
-            gridOverlay.style.display = 'block';
+        if (isInitialized) {
+            console.log('CAD Crosshair already initialized');
+            return;
         }
         
-        // Add mouse move listener
-        document.addEventListener('mousemove', updateCrosshairPosition);
-        
-        // Add debugging features
-        addDebugFeatures();
-        
-        console.log('CAD Crosshair system initialized - Default Mode Active');
+        try {
+            createCrosshairOverlay();
+            createGridOverlay();
+            
+            // Show overlays immediately with enhanced visibility
+            if (crosshairOverlay) {
+                crosshairOverlay.style.display = 'block';
+                crosshairOverlay.style.opacity = '1';
+                crosshairOverlay.style.visibility = 'visible';
+                crosshairOverlay.style.zIndex = '9999';
+            }
+            
+            const gridOverlay = document.getElementById('cad-grid-overlay');
+            if (gridOverlay) {
+                gridOverlay.style.display = 'block';
+                gridOverlay.style.opacity = '0.3';
+                gridOverlay.style.visibility = 'visible';
+                gridOverlay.style.zIndex = '9998';
+            }
+            
+            // Add mouse move listener with throttling for better performance
+            let mouseMoveTimeout;
+            document.addEventListener('mousemove', function(e) {
+                if (mouseMoveTimeout) {
+                    clearTimeout(mouseMoveTimeout);
+                }
+                mouseMoveTimeout = setTimeout(() => {
+                    updateCrosshairPosition(e);
+                }, 16); // ~60fps throttling
+            });
+            
+            // Add debugging features
+            addDebugFeatures();
+            
+            // Force crosshair visibility on page load with multiple attempts
+            const forceVisibility = () => {
+                if (crosshairOverlay) {
+                    crosshairOverlay.style.display = 'block';
+                    crosshairOverlay.style.opacity = '1';
+                    crosshairOverlay.style.visibility = 'visible';
+                    crosshairOverlay.style.zIndex = '9999';
+                    console.log('CAD Crosshair overlay forced visible');
+                }
+            };
+            
+            // Multiple attempts to ensure visibility
+            setTimeout(forceVisibility, 100);
+            setTimeout(forceVisibility, 500);
+            setTimeout(forceVisibility, 1000);
+            
+            // Also try on window load
+            window.addEventListener('load', forceVisibility);
+            
+            isInitialized = true;
+            console.log('CAD Crosshair system initialized - Default Mode Active');
+            
+        } catch (error) {
+            console.error('Error initializing CAD Crosshair:', error);
+            // Fallback to basic crosshair cursor
+            document.body.style.cursor = 'crosshair';
+        }
     }
 
-    // Start initialization
-    init();
+    // Start initialization with delay to ensure DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        setTimeout(init, 100);
+    }
+    
+    // Also try on window load as backup
+    window.addEventListener('load', init);
 }
 
 // Pen Mode functionality
