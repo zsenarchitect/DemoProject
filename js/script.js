@@ -1016,38 +1016,31 @@ function createSideNavMobileButton() {
         return;
     }
     
-    // Create side navigation mobile button
+    // Create side navigation mobile button (burger that toggles to X)
     const sideNavBtn = document.createElement('button');
     sideNavBtn.className = 'side-nav-mobile-btn';
     sideNavBtn.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <span class="icon-burger" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+        <span class="icon-close" aria-hidden="true" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
         <span>Navigation</span>
     `;
     sideNavBtn.setAttribute('aria-label', 'Toggle side navigation');
     sideNavBtn.setAttribute('aria-expanded', 'false');
-    
-    // Add close button to side navigation
-    const sideNavCloseBtn = document.createElement('button');
-    sideNavCloseBtn.className = 'side-nav-close-btn';
-    sideNavCloseBtn.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    `;
-    sideNavCloseBtn.setAttribute('aria-label', 'Close side navigation');
     
     // Insert button at the top of main content
     mainContent.insertBefore(sideNavBtn, mainContent.firstChild);
     
     // Floating action button (FAB) removed per design request
     
-    // Add close button to the beginning of side nav list
-    const sideNavList = sideNav.querySelector('.side-nav-list');
-    if (sideNavList) {
-        sideNavList.insertBefore(sideNavCloseBtn, sideNavList.firstChild);
-    }
+    // No dedicated close button; toggle same control
     
     // Toggle side navigation
     let isSideNavOpen = false;
@@ -1060,14 +1053,20 @@ function createSideNavMobileButton() {
             sideNav.classList.add('mobile-open');
             sideNavBtn.setAttribute('aria-expanded', 'true');
             sideNavBtn.classList.add('active');
-            // FAB removed
+            const burgerIcon = sideNavBtn.querySelector('.icon-burger');
+            const closeIcon = sideNavBtn.querySelector('.icon-close');
+            if (burgerIcon) burgerIcon.style.display = 'none';
+            if (closeIcon) closeIcon.style.display = 'inline-flex';
             // Prevent body scroll when side nav is open
             document.body.style.overflow = 'hidden';
         } else {
             sideNav.classList.remove('mobile-open');
             sideNavBtn.setAttribute('aria-expanded', 'false');
             sideNavBtn.classList.remove('active');
-            // FAB removed
+            const burgerIcon = sideNavBtn.querySelector('.icon-burger');
+            const closeIcon = sideNavBtn.querySelector('.icon-close');
+            if (burgerIcon) burgerIcon.style.display = 'inline-flex';
+            if (closeIcon) closeIcon.style.display = 'none';
             // Restore body scroll
             document.body.style.overflow = '';
         }
@@ -1079,8 +1078,10 @@ function createSideNavMobileButton() {
             sideNav.classList.remove('mobile-open');
             sideNavBtn.setAttribute('aria-expanded', 'false');
             sideNavBtn.classList.remove('active');
-            fabBtn.setAttribute('aria-expanded', 'false');
-            fabBtn.classList.remove('active');
+            const burgerIcon = sideNavBtn.querySelector('.icon-burger');
+            const closeIcon = sideNavBtn.querySelector('.icon-close');
+            if (burgerIcon) burgerIcon.style.display = 'inline-flex';
+            if (closeIcon) closeIcon.style.display = 'none';
             document.body.style.overflow = '';
         }
     }
@@ -1098,19 +1099,7 @@ function createSideNavMobileButton() {
         toggleSideNav();
     });
     
-    // FAB removed; no event listeners
-    
-    // Close button event listeners
-    sideNavCloseBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        closeSideNav();
-    });
-    
-    sideNavCloseBtn.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        closeSideNav();
-    });
+    // FAB and dedicated close button removed
     
     // Close side nav when clicking a link
     const sideNavLinks = sideNav.querySelectorAll('.side-nav-link');
@@ -1344,6 +1333,8 @@ function initializeCADCrosshair() {
         coordDisplay.id = 'cad-coord-display';
         coordDisplay.innerHTML = 'X: 0, Y: 0';
         document.body.appendChild(coordDisplay);
+        // Ensure it's placed inside bottom HUD alignment bar
+        try { setupBottomHud(); } catch (e) { /* noop */ }
 
         // Update coordinates on mouse move
         document.addEventListener('mousemove', function(e) {
@@ -1454,38 +1445,38 @@ function initializeCADCrosshair() {
 }
 // Bottom HUD assembly: align XY, search bar, and return-to-top button
 function setupBottomHud() {
-    if (document.getElementById('bottomHud')) return;
     const coordDisplay = document.getElementById('cad-coord-display');
     const searchContainer = document.getElementById('searchContainer');
     const returnToTopBtn = document.querySelector('.return-to-top');
 
     if (!coordDisplay && !searchContainer && !returnToTopBtn) return;
 
-    const hud = document.createElement('div');
-    hud.id = 'bottomHud';
-    hud.className = 'bottom-hud';
+    let hud = document.getElementById('bottomHud');
+    if (!hud) {
+        hud = document.createElement('div');
+        hud.id = 'bottomHud';
+        hud.className = 'bottom-hud';
+        document.body.appendChild(hud);
+    }
 
-    // Left group (XY)
-    if (coordDisplay) {
-        hud.appendChild(coordDisplay);
+    // Attach XY (left)
+    if (coordDisplay && coordDisplay.parentElement !== hud) {
         coordDisplay.classList.add('in-hud');
+        hud.appendChild(coordDisplay);
     }
 
-    // Middle (Search)
-    if (searchContainer) {
-        hud.appendChild(searchContainer);
+    // Attach Search (middle, only on presentation page)
+    if (searchContainer && searchContainer.parentElement !== hud) {
         searchContainer.classList.add('in-hud');
+        hud.appendChild(searchContainer);
     }
 
-    // Right (Return to top)
-    if (returnToTopBtn) {
-        hud.appendChild(returnToTopBtn);
+    // Attach Return-to-top (right)
+    if (returnToTopBtn && returnToTopBtn.parentElement !== hud) {
         returnToTopBtn.classList.add('in-hud');
-        // Ensure it's visible in HUD
+        hud.appendChild(returnToTopBtn);
         returnToTopBtn.classList.add('visible');
     }
-
-    document.body.appendChild(hud);
 }
 
 // Main pen mode functionality removed - only available in sheet enlargement modal
