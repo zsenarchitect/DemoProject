@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('searchInput')) {
         initializeSearchFunctionality();
     }
+
+    // Assemble bottom HUD after core widgets are added
+    setTimeout(setupBottomHud, 0);
 });
 
 // Navigation functionality
@@ -1451,6 +1454,41 @@ function initializeCADCrosshair() {
     
     // Also try on window load as backup
     window.addEventListener('load', init);
+}
+// Bottom HUD assembly: align XY, search bar, and return-to-top button
+function setupBottomHud() {
+    if (document.getElementById('bottomHud')) return;
+    const coordDisplay = document.getElementById('cad-coord-display');
+    const searchContainer = document.getElementById('searchContainer');
+    const returnToTopBtn = document.querySelector('.return-to-top');
+
+    if (!coordDisplay && !searchContainer && !returnToTopBtn) return;
+
+    const hud = document.createElement('div');
+    hud.id = 'bottomHud';
+    hud.className = 'bottom-hud';
+
+    // Left group (XY)
+    if (coordDisplay) {
+        hud.appendChild(coordDisplay);
+        coordDisplay.classList.add('in-hud');
+    }
+
+    // Middle (Search)
+    if (searchContainer) {
+        hud.appendChild(searchContainer);
+        searchContainer.classList.add('in-hud');
+    }
+
+    // Right (Return to top)
+    if (returnToTopBtn) {
+        hud.appendChild(returnToTopBtn);
+        returnToTopBtn.classList.add('in-hud');
+        // Ensure it's visible in HUD
+        returnToTopBtn.classList.add('visible');
+    }
+
+    document.body.appendChild(hud);
 }
 
 // Main pen mode functionality removed - only available in sheet enlargement modal

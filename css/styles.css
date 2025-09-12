@@ -54,6 +54,44 @@ body {
     cursor: crosshair;
 }
 
+/* Bottom HUD to align XY, Search and Return-to-top */
+.bottom-hud {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: grid;
+    grid-template-columns: 280px 1fr 60px;
+    gap: 20px;
+    align-items: center;
+    z-index: 1002;
+    pointer-events: none;
+}
+
+.bottom-hud .in-hud {
+    pointer-events: all;
+}
+
+/* Adjust XY inside HUD */
+.bottom-hud #cad-coord-display.in-hud {
+    position: static;
+    margin: 0;
+    min-height: auto;
+}
+
+/* Adjust Search inside HUD */
+.bottom-hud .search-container.in-hud {
+    position: static;
+    width: 100%;
+}
+
+/* Unify Return-to-top design and placement in HUD */
+.bottom-hud .return-to-top.in-hud {
+    position: static;
+    width: 56px;
+    height: 56px;
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
@@ -1773,8 +1811,8 @@ body.cad-cursor {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 50px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
     background: var(--accent-primary);
     color: var(--text-primary);
     border: none;
@@ -1891,14 +1929,18 @@ body.cad-cursor {
         justify-content: center;
     }
     
-    /* Mobile return to top button */
-    .return-to-top {
-        bottom: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
+    /* Mobile HUD layout */
+    .bottom-hud {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        grid-template-columns: 1fr 56px;
+        grid-template-rows: auto auto;
+        gap: 10px;
     }
+    .bottom-hud #cad-coord-display.in-hud { grid-column: 1 / 2; }
+    .bottom-hud .search-container.in-hud { grid-column: 1 / 2; }
+    .bottom-hud .return-to-top.in-hud { grid-column: 2 / 3; grid-row: 1 / span 2; }
     
     .return-to-top svg {
         width: 20px;
