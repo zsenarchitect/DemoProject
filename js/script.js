@@ -1802,6 +1802,52 @@ function initializeDownloadFunctionality() {
         }
     }
     
+    // Function to show download error message
+    function showDownloadError(message) {
+        const errorMsg = document.createElement('div');
+        errorMsg.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            font-weight: 500;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+        errorMsg.innerHTML = `
+            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+                    <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                ${message}
+            </div>
+        `;
+        
+        document.body.appendChild(errorMsg);
+        
+        // Animate in
+        setTimeout(() => {
+            errorMsg.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            errorMsg.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (errorMsg.parentNode) {
+                    errorMsg.parentNode.removeChild(errorMsg);
+                }
+            }, 300);
+        }, 5000);
+    }
+
     // Function to show download success message
     function showDownloadSuccess(message = 'All renderings downloaded successfully!') {
         const successMsg = document.createElement('div');
@@ -1913,6 +1959,8 @@ function initializeDownloadFunctionality() {
     console.log('Download functionality initialized');
     console.log('PDF download button found:', !!downloadPdfBtn);
     console.log('Renderings download button found:', !!downloadRenderingsBtn);
+    console.log('JSZip library available:', typeof JSZip !== 'undefined');
+    console.log('Total rendering images:', renderingImages.length);
 }
 
 // Search Functionality
