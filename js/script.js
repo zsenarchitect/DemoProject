@@ -899,28 +899,22 @@ function createHamburgerMenu() {
     const hamburgerBtn = document.createElement('button');
     hamburgerBtn.className = 'hamburger-menu-btn';
     hamburgerBtn.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <span class="icon-burger" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+        <span class="icon-close" aria-hidden="true" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
     `;
     hamburgerBtn.setAttribute('aria-label', 'Toggle navigation menu');
     hamburgerBtn.setAttribute('aria-expanded', 'false');
 
-    // Add close button to hamburger menu
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'mobile-close-btn';
-    closeBtn.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    `;
-    closeBtn.setAttribute('aria-label', 'Close navigation menu');
-
     // Insert button before nav-list
     navList.parentNode.insertBefore(hamburgerBtn, navList);
-
-    // Add close button to the beginning of nav list
-    navList.insertBefore(closeBtn, navList.firstChild);
 
     // Toggle hamburger menu
     let isOpen = false;
@@ -931,11 +925,21 @@ function createHamburgerMenu() {
         if (isOpen) {
             navList.classList.add('mobile-open');
             hamburgerBtn.setAttribute('aria-expanded', 'true');
+            hamburgerBtn.classList.add('is-open');
+            const burgerIcon = hamburgerBtn.querySelector('.icon-burger');
+            const closeIcon = hamburgerBtn.querySelector('.icon-close');
+            if (burgerIcon) burgerIcon.style.display = 'none';
+            if (closeIcon) closeIcon.style.display = 'inline-flex';
             // Prevent body scroll when menu is open
             document.body.style.overflow = 'hidden';
         } else {
             navList.classList.remove('mobile-open');
             hamburgerBtn.setAttribute('aria-expanded', 'false');
+            hamburgerBtn.classList.remove('is-open');
+            const burgerIcon = hamburgerBtn.querySelector('.icon-burger');
+            const closeIcon = hamburgerBtn.querySelector('.icon-close');
+            if (burgerIcon) burgerIcon.style.display = 'inline-flex';
+            if (closeIcon) closeIcon.style.display = 'none';
             // Restore body scroll
             document.body.style.overflow = '';
         }
@@ -946,6 +950,11 @@ function createHamburgerMenu() {
             isOpen = false;
             navList.classList.remove('mobile-open');
             hamburgerBtn.setAttribute('aria-expanded', 'false');
+            hamburgerBtn.classList.remove('is-open');
+            const burgerIcon = hamburgerBtn.querySelector('.icon-burger');
+            const closeIcon = hamburgerBtn.querySelector('.icon-close');
+            if (burgerIcon) burgerIcon.style.display = 'inline-flex';
+            if (closeIcon) closeIcon.style.display = 'none';
             document.body.style.overflow = '';
         }
     }
@@ -961,18 +970,6 @@ function createHamburgerMenu() {
         e.preventDefault();
         e.stopPropagation();
         toggleMenu();
-    });
-
-    // Close button event listeners
-    closeBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        closeMenu();
-    });
-
-    closeBtn.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        closeMenu();
     });
 
     // Close menu when clicking a link
