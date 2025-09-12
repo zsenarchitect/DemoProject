@@ -1176,6 +1176,11 @@ function debounce(func, wait) {
 
 // Gallery lightbox functionality (for future enhancement)
 function initializeGalleryLightbox() {
+    // If sheet modal exists on this page, do not initialize the default lightbox
+    if (document.getElementById('sheetModal')) {
+        console.log('Sheet modal present; disabling default gallery lightbox.');
+        return;
+    }
     const galleryItems = document.querySelectorAll('.gallery-item img');
 
     galleryItems.forEach(img => {
@@ -1562,7 +1567,8 @@ function initializeSheetEnlargement() {
             const currentY = e.clientY - rect.top;
             
             const ctx = sheetDrawingCanvas.getContext('2d');
-            ctx.strokeStyle = currentTool === 'pen' ? sheetPenColor.value : 'rgba(0,0,0,0)';
+            // Use solid stroke always; compositing mode controls erase vs draw
+            ctx.strokeStyle = currentTool === 'pen' ? sheetPenColor.value : '#000000';
             ctx.lineWidth = parseInt(sheetPenSize.value);
             
             ctx.lineTo(currentX, currentY);
@@ -1723,6 +1729,10 @@ function initializeSheetEnlargement() {
             drawBaseImage();
             // Initialize pen mode for this sheet
             initializeSheetPenMode();
+            // Auto-activate pen/canvas mode directly when opening
+            if (!isSheetPenModeActive) {
+                penModeModalBtn.click();
+            }
         };
         img.src = sheetSrc;
         
@@ -1773,11 +1783,14 @@ function initializeSheetEnlargement() {
         
         sheetImages.forEach((img, index) => {
             img.style.cursor = 'pointer';
-            img.addEventListener('click', function() {
+            img.addEventListener('click', function(e) {
+                // Prevent any default/lightbox behavior
+                e.preventDefault();
+                e.stopPropagation();
                 const sheetTitle = this.closest('.sheet-card, .rendering-card').querySelector('h4').textContent;
                 const sheetId = `sheet_${index}_${Date.now()}`;
                 openSheetModal(this.src, sheetTitle, sheetId);
-            });
+            }, true);
         });
     }
 
@@ -1848,14 +1861,10 @@ function initializeReturnToTop() {
     // Add button to body
     document.body.appendChild(returnToTopBtn);
     
-    // Show/hide button based on scroll position
+    // Show/hide button based on scroll position (fixed threshold to avoid flicker)
     function toggleReturnToTop() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const windowHeight = window.innerHeight;
-        const documentHeight = document.documentElement.scrollHeight;
-        
-        // Show button when scrolled down more than 300px or 20% of page height
-        const threshold = Math.max(300, documentHeight * 0.2);
+        const threshold = 200; // fixed threshold for reliability
         
         if (scrollTop > threshold) {
             returnToTopBtn.classList.add('visible');
