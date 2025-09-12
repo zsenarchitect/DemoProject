@@ -473,6 +473,90 @@
     <!-- Drawing Canvas Overlay -->
     <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
 
+    <!-- Sheet Enlargement Modal -->
+    <div id="sheetModal" class="sheet-modal" style="display: none;">
+        <div class="sheet-modal-content">
+            <div class="sheet-modal-header">
+                <h3 id="sheetModalTitle">Sheet Title</h3>
+                <div class="sheet-modal-controls">
+                    <button id="penModeModalBtn" class="pen-mode-btn" title="Toggle Pen Mode">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Pen Mode
+                    </button>
+                    <button id="downloadAnnotatedBtn" class="pen-mode-btn" title="Download Annotated Version">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Download
+                    </button>
+                    <button id="closeSheetModal" class="pen-mode-btn" title="Close Sheet">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Close
+                    </button>
+                </div>
+            </div>
+            <div class="sheet-modal-body">
+                <div class="sheet-container">
+                    <img id="sheetModalImage" src="" alt="Enlarged Sheet">
+                    <canvas id="sheetDrawingCanvas" class="sheet-drawing-canvas"></canvas>
+                </div>
+                
+                <!-- Sheet Pen Mode Interface -->
+                <div id="sheetPenModeInterface" class="sheet-pen-mode-interface">
+                    <div class="sheet-pen-toolbar">
+                        <div class="sheet-pen-tools">
+                            <button id="sheetPenTool" class="sheet-pen-tool-btn active" title="Pen Tool">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </button>
+                            <button id="sheetEraserTool" class="sheet-pen-tool-btn" title="Eraser Tool">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 21h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 3l8 8-8 8-8-8 8-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="sheet-pen-controls">
+                            <label for="sheetPenSize">Size:</label>
+                            <input type="range" id="sheetPenSize" min="1" max="20" value="3" class="sheet-pen-size-slider">
+                            <span id="sheetPenSizeValue">3</span>
+                            <label for="sheetPenColor">Color:</label>
+                            <input type="color" id="sheetPenColor" value="#ff6b35" class="sheet-pen-color-picker">
+                        </div>
+                        <div class="sheet-pen-actions">
+                            <button id="sheetClearAll" class="sheet-pen-action-btn" title="Clear All Annotations">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Clear All
+                            </button>
+                            <button id="sheetClosePenMode" class="sheet-pen-action-btn" title="Close Pen Mode">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/script.js"></script>
 </body>
 </html>

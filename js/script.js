@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeResponsiveMenu();
     initializeCADCrosshair();
     initializePenMode();
+    initializeSheetEnlargement();
+    initializeReturnToTop();
 });
 
 // Navigation functionality
@@ -74,14 +76,169 @@ function initializeBackgroundVideo() {
         return;
     }
 
-    console.log('Initializing background video...');
+    // Get loading indicator elements
+    const loadingIndicator = document.getElementById('videoLoadingIndicator');
+    const errorIndicator = document.getElementById('videoErrorIndicator');
+    const progressFill = document.getElementById('videoProgressFill');
+    const progressText = document.getElementById('videoProgressText');
+    const retryBtn = document.getElementById('retryVideoBtn');
 
-    // Add debugging info
-    backgroundVideo.addEventListener('loadstart', () => console.log('Video load started'));
-    backgroundVideo.addEventListener('loadedmetadata', () => console.log('Video metadata loaded'));
-    backgroundVideo.addEventListener('loadeddata', () => console.log('Video data loaded'));
-    backgroundVideo.addEventListener('canplay', () => console.log('Video can start playing'));
-    backgroundVideo.addEventListener('canplaythrough', () => console.log('Video can play through without stopping'));
+    console.log('Initializing background video with enhanced loading status...');
+
+    // Show loading indicator initially
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'flex';
+    }
+
+    // Track loading progress
+    let loadingProgress = 0;
+    let isVideoReady = false;
+    let loadingTimeout = null;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    // Update progress display
+    function updateProgress(progress) {
+        loadingProgress = Math.min(100, Math.max(0, progress));
+        if (progressFill) {
+            progressFill.style.width = loadingProgress + '%';
+        }
+        if (progressText) {
+            progressText.textContent = Math.round(loadingProgress) + '%';
+        }
+    }
+
+    // Hide loading indicator
+    function hideLoadingIndicator() {
+        if (loadingIndicator) {
+            loadingIndicator.style.opacity = '0';
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    // Show error indicator
+    function showErrorIndicator() {
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
+        if (errorIndicator) {
+            errorIndicator.style.display = 'flex';
+            
+            // Update retry button based on retry count
+            if (retryCount >= maxRetries) {
+                const retryBtn = document.getElementById('retryVideoBtn');
+                if (retryBtn) {
+                    retryBtn.textContent = 'Max Retries Reached';
+                    retryBtn.disabled = true;
+                    retryBtn.style.opacity = '0.5';
+                    retryBtn.style.cursor = 'not-allowed';
+                }
+                
+                const errorText = errorIndicator.querySelector('.error-text');
+                if (errorText) {
+                    errorText.textContent = 'Video failed to load after multiple attempts. Please check your connection.';
+                }
+            }
+        }
+    }
+
+    // Hide error indicator
+    function hideErrorIndicator() {
+        if (errorIndicator) {
+            errorIndicator.style.display = 'none';
+        }
+    }
+
+    // Retry video loading
+    function retryVideoLoad() {
+        if (retryCount >= maxRetries) {
+            console.warn('Maximum retry attempts reached');
+            return;
+        }
+        
+        retryCount++;
+        hideErrorIndicator();
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'flex';
+            loadingIndicator.style.opacity = '1';
+        }
+        updateProgress(0);
+        
+        // Clear any existing timeout
+        if (loadingTimeout) {
+            clearTimeout(loadingTimeout);
+        }
+        
+        // Set a timeout for loading
+        loadingTimeout = setTimeout(() => {
+            if (!isVideoReady) {
+                console.warn('Video loading timeout');
+                showErrorIndicator();
+            }
+        }, 15000); // 15 second timeout
+        
+        // Reset video and try to load again
+        backgroundVideo.load();
+    }
+
+    // Set initial timeout for loading
+    loadingTimeout = setTimeout(() => {
+        if (!isVideoReady) {
+            console.warn('Video loading timeout');
+            showErrorIndicator();
+        }
+    }, 15000); // 15 second timeout
+
+    // Video event listeners
+    backgroundVideo.addEventListener('loadstart', () => {
+        console.log('Video load started');
+        updateProgress(10);
+    });
+
+    backgroundVideo.addEventListener('loadedmetadata', () => {
+        console.log('Video metadata loaded');
+        updateProgress(30);
+    });
+
+    backgroundVideo.addEventListener('loadeddata', () => {
+        console.log('Video data loaded');
+        updateProgress(60);
+    });
+
+    backgroundVideo.addEventListener('progress', () => {
+        if (backgroundVideo.buffered.length > 0) {
+            const bufferedEnd = backgroundVideo.buffered.end(backgroundVideo.buffered.length - 1);
+            const duration = backgroundVideo.duration;
+            if (duration > 0) {
+                const progress = (bufferedEnd / duration) * 100;
+                updateProgress(60 + (progress * 0.3)); // 60-90% based on buffering
+            }
+        }
+    });
+
+    backgroundVideo.addEventListener('canplay', () => {
+        console.log('Video can start playing');
+        updateProgress(90);
+    });
+
+    backgroundVideo.addEventListener('canplaythrough', () => {
+        console.log('Video can play through without stopping');
+        updateProgress(100);
+        isVideoReady = true;
+        
+        // Clear loading timeout
+        if (loadingTimeout) {
+            clearTimeout(loadingTimeout);
+            loadingTimeout = null;
+        }
+        
+        // Hide loading indicator after a short delay
+        setTimeout(() => {
+            hideLoadingIndicator();
+        }, 500);
+    });
 
     // Ensure video plays on load
     backgroundVideo.addEventListener('loadeddata', function() {
@@ -101,7 +258,11 @@ function initializeBackgroundVideo() {
     backgroundVideo.addEventListener('error', function(e) {
         console.error('Background video failed to load:', e);
         console.error('Video error details:', this.error);
-        // Show fallback image
+        
+        // Show error indicator
+        showErrorIndicator();
+        
+        // Show fallback image as backup
         const fallbackImg = this.querySelector('img');
         if (fallbackImg) {
             console.log('Showing fallback image');
@@ -113,7 +274,7 @@ function initializeBackgroundVideo() {
     // Ensure video plays when it becomes visible
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && isVideoReady) {
                 console.log('Video is visible, attempting to play...');
                 backgroundVideo.play().catch(console.log);
             }
@@ -122,7 +283,12 @@ function initializeBackgroundVideo() {
     
     observer.observe(backgroundVideo);
 
-    // Add video status display for debugging
+    // Retry button functionality
+    if (retryBtn) {
+        retryBtn.addEventListener('click', retryVideoLoad);
+    }
+
+    // Add video status display for debugging (optional)
     const statusDisplay = document.createElement('div');
     statusDisplay.id = 'video-status';
     statusDisplay.style.cssText = `
@@ -136,11 +302,12 @@ function initializeBackgroundVideo() {
         font-family: monospace;
         font-size: 12px;
         z-index: 1000;
+        display: none; /* Hidden by default, can be enabled for debugging */
     `;
     statusDisplay.textContent = 'Video: Loading...';
     document.body.appendChild(statusDisplay);
 
-    // Update status display
+    // Update status display (for debugging)
     backgroundVideo.addEventListener('loadstart', () => statusDisplay.textContent = 'Video: Loading...');
     backgroundVideo.addEventListener('loadeddata', () => statusDisplay.textContent = 'Video: Loaded');
     backgroundVideo.addEventListener('play', () => statusDisplay.textContent = 'Video: Playing');
@@ -153,126 +320,307 @@ function initializeVideoPlayer() {
     const video = document.getElementById('walkthroughVideo');
     if (!video) return;
 
+    // Get all video player elements
+    const videoOverlay = document.getElementById('videoOverlay');
+    const playButton = document.getElementById('playButton');
+    const videoControls = document.getElementById('videoControls');
     const playPauseBtn = document.getElementById('playPauseBtn');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
+    const progressHandle = document.getElementById('progressHandle');
     const currentTime = document.getElementById('currentTime');
     const duration = document.getElementById('duration');
     const volumeBtn = document.getElementById('volumeBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
 
     let isPlaying = false;
     let isMuted = false;
+    let isDragging = false;
+    let hideControlsTimeout;
 
-    // Play/Pause functionality
-    function togglePlayPause() {
-        if (isPlaying) {
-            video.pause();
-            updatePlayPauseButton(false);
-        } else {
-            video.play();
-            updatePlayPauseButton(true);
-        }
-        isPlaying = !isPlaying;
+    // Initialize video player
+    function init() {
+        // Set initial volume
+        video.volume = 1;
+        if (volumeSlider) volumeSlider.value = 1;
+        
+        // Hide default controls
+        video.controls = false;
+        
+        // Set up event listeners
+        setupEventListeners();
     }
 
-    function updatePlayPauseButton(playing) {
-        const icon = playPauseBtn.querySelector('svg');
-        if (playing) {
-            // Show pause icon
-            icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    // Setup all event listeners
+    function setupEventListeners() {
+        // Play button (overlay)
+        if (playButton) playButton.addEventListener('click', startPlayback);
+        
+        // Video click to play/pause
+        video.addEventListener('click', togglePlayPause);
+        
+        // Control buttons
+        if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
+        if (volumeBtn) volumeBtn.addEventListener('click', toggleMute);
+        if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
+        
+        // Progress bar
+        if (progressBar) {
+            progressBar.addEventListener('click', setProgress);
+            progressBar.addEventListener('mousedown', startDragging);
+            progressBar.addEventListener('mousemove', dragProgress);
+            progressBar.addEventListener('mouseup', stopDragging);
+            progressBar.addEventListener('mouseleave', stopDragging);
+        }
+        
+        // Volume slider
+        if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
+        
+        // Video events
+        video.addEventListener('loadedmetadata', updateDuration);
+        video.addEventListener('timeupdate', updateProgress);
+        video.addEventListener('play', onPlay);
+        video.addEventListener('pause', onPause);
+        video.addEventListener('ended', onEnded);
+        video.addEventListener('volumechange', updateVolumeButton);
+        
+        // Mouse events for controls visibility
+        video.addEventListener('mouseenter', showControls);
+        video.addEventListener('mouseleave', hideControls);
+        if (videoControls) {
+            videoControls.addEventListener('mouseenter', showControls);
+            videoControls.addEventListener('mouseleave', hideControls);
+        }
+        
+        // Fullscreen events
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+        
+        // Keyboard controls
+        document.addEventListener('keydown', handleKeyboard);
+    }
+
+    // Start playback (hide overlay, show controls)
+    function startPlayback() {
+        video.play();
+        if (videoOverlay) videoOverlay.classList.add('hidden');
+        showControls();
+    }
+
+    // Toggle play/pause
+    function togglePlayPause() {
+        if (video.paused) {
+            video.play();
         } else {
-            // Show play icon
-            icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            video.pause();
+        }
+    }
+
+    // Update play/pause button
+    function updatePlayPauseButton(playing) {
+        if (!playPauseBtn) return;
+        
+        const playIcon = playPauseBtn.querySelector('.play-icon');
+        const pauseIcon = playPauseBtn.querySelector('.pause-icon');
+        
+        if (playing) {
+            if (playIcon) playIcon.style.display = 'none';
+            if (pauseIcon) pauseIcon.style.display = 'block';
+            playPauseBtn.classList.add('video-playing');
+        } else {
+            if (playIcon) playIcon.style.display = 'block';
+            if (pauseIcon) pauseIcon.style.display = 'none';
+            playPauseBtn.classList.remove('video-playing');
         }
     }
 
     // Progress bar functionality
     function updateProgress() {
+        if (isDragging || !progressFill) return;
+        
         const progress = (video.currentTime / video.duration) * 100;
         progressFill.style.width = progress + '%';
-        currentTime.textContent = formatTime(video.currentTime);
+        if (progressHandle) progressHandle.style.left = progress + '%';
+        if (currentTime) currentTime.textContent = formatTime(video.currentTime);
     }
 
     function setProgress(e) {
+        if (!progressBar) return;
+        
         const rect = progressBar.getBoundingClientRect();
-        const percent = (e.clientX - rect.left) / rect.width;
+        const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
         video.currentTime = percent * video.duration;
+    }
+
+    // Dragging functionality
+    function startDragging(e) {
+        isDragging = true;
+        setProgress(e);
+    }
+
+    function dragProgress(e) {
+        if (isDragging) {
+            setProgress(e);
+        }
+    }
+
+    function stopDragging() {
+        isDragging = false;
     }
 
     // Volume functionality
     function toggleMute() {
         video.muted = !video.muted;
-        isMuted = video.muted;
+        updateVolumeButton();
+    }
+
+    function updateVolume() {
+        if (!volumeSlider) return;
+        
+        video.volume = volumeSlider.value;
+        video.muted = video.volume === 0;
         updateVolumeButton();
     }
 
     function updateVolumeButton() {
-        const icon = volumeBtn.querySelector('svg');
+        if (!volumeBtn) return;
+        
+        const volumeOn = volumeBtn.querySelector('.volume-on');
+        const volumeOff = volumeBtn.querySelector('.volume-off');
+        
         if (video.muted || video.volume === 0) {
-            // Show muted icon
-            icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5zm11-4.5v13c2.21-.86 3.75-3.04 3.75-5.5S18.21 4.64 16 4.5z"/><path d="M0 0h24v24H0z" fill="none"/>';
+            if (volumeOn) volumeOn.style.display = 'none';
+            if (volumeOff) volumeOff.style.display = 'block';
+            volumeBtn.classList.add('video-muted');
         } else {
-            // Show volume icon
-            icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+            if (volumeOn) volumeOn.style.display = 'block';
+            if (volumeOff) volumeOff.style.display = 'none';
+            volumeBtn.classList.remove('video-muted');
         }
     }
 
     // Fullscreen functionality
     function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            video.requestFullscreen().catch(err => {
-                console.log('Error attempting to enable fullscreen:', err);
-            });
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+            !document.mozFullScreenElement && !document.msFullscreenElement) {
+            const elem = video.parentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
         } else {
-            document.exitFullscreen();
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
         }
     }
 
-    // Utility functions
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    function updateFullscreenButton() {
+        if (!fullscreenBtn) return;
+        
+        const fullscreenEnter = fullscreenBtn.querySelector('.fullscreen-enter');
+        const fullscreenExit = fullscreenBtn.querySelector('.fullscreen-exit');
+        
+        if (document.fullscreenElement || document.webkitFullscreenElement || 
+            document.mozFullScreenElement || document.msFullscreenElement) {
+            if (fullscreenEnter) fullscreenEnter.style.display = 'none';
+            if (fullscreenExit) fullscreenExit.style.display = 'block';
+            fullscreenBtn.classList.add('video-fullscreen');
+        } else {
+            if (fullscreenEnter) fullscreenEnter.style.display = 'block';
+            if (fullscreenExit) fullscreenExit.style.display = 'none';
+            fullscreenBtn.classList.remove('video-fullscreen');
+        }
     }
 
-    // Event listeners
-    playPauseBtn.addEventListener('click', togglePlayPause);
-    video.addEventListener('click', togglePlayPause);
+    // Controls visibility
+    function showControls() {
+        if (videoControls) {
+            videoControls.classList.add('show');
+            clearTimeout(hideControlsTimeout);
+            hideControlsTimeout = setTimeout(hideControls, 3000);
+        }
+    }
 
-    progressBar.addEventListener('click', setProgress);
-    video.addEventListener('timeupdate', updateProgress);
+    function hideControls() {
+        if (videoControls && !video.paused) {
+            videoControls.classList.remove('show');
+        }
+    }
 
-    video.addEventListener('loadedmetadata', function() {
-        duration.textContent = formatTime(video.duration);
-    });
+    // Video event handlers
+    function onPlay() {
+        isPlaying = true;
+        updatePlayPauseButton(true);
+    }
 
-    volumeBtn.addEventListener('click', toggleMute);
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    function onPause() {
+        isPlaying = false;
+        updatePlayPauseButton(false);
+    }
 
-    video.addEventListener('play', () => updatePlayPauseButton(true));
-    video.addEventListener('pause', () => updatePlayPauseButton(false));
-    video.addEventListener('volumechange', updateVolumeButton);
+    function onEnded() {
+        isPlaying = false;
+        updatePlayPauseButton(false);
+        if (videoOverlay) videoOverlay.classList.remove('hidden');
+    }
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.target.tagName.toLowerCase() === 'input') return;
+    function updateDuration() {
+        if (duration) duration.textContent = formatTime(video.duration);
+    }
 
+    // Keyboard controls
+    function handleKeyboard(e) {
+        if (e.target.tagName === 'INPUT') return;
+        
         switch(e.code) {
             case 'Space':
                 e.preventDefault();
                 togglePlayPause();
                 break;
-            case 'KeyF':
-                e.preventDefault();
-                toggleFullscreen();
-                break;
             case 'KeyM':
                 e.preventDefault();
                 toggleMute();
                 break;
+            case 'KeyF':
+                e.preventDefault();
+                toggleFullscreen();
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                video.currentTime = Math.max(0, video.currentTime - 10);
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                break;
         }
-    });
+    }
+
+    // Utility functions
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+
+    // Initialize the player
+    init();
 }
 
 // Scroll effects and animations
@@ -331,13 +679,16 @@ function initializeResponsiveMenu() {
         createMobileMenu();
     }
 
-    window.addEventListener('resize', function() {
+    // Use debounced resize handler for better performance
+    const debouncedResize = debounce(function() {
         if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-btn')) {
             createMobileMenu();
         } else if (window.innerWidth > 768 && document.querySelector('.mobile-menu-btn')) {
             removeMobileMenu();
         }
-    });
+    }, 250);
+
+    window.addEventListener('resize', debouncedResize);
 }
 
 function createMobileMenu() {
@@ -358,63 +709,125 @@ function createMobileMenu() {
         </svg>
     `;
     mobileBtn.setAttribute('aria-label', 'Toggle mobile menu');
+    mobileBtn.setAttribute('aria-expanded', 'false');
+
+    // Add close button to mobile menu
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'mobile-close-btn';
+    closeBtn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    `;
+    closeBtn.setAttribute('aria-label', 'Close mobile menu');
 
     // Insert button before nav-list
     navList.parentNode.insertBefore(mobileBtn, navList);
 
+    // Add close button to the beginning of nav list
+    navList.insertBefore(closeBtn, navList.firstChild);
+
     // Toggle mobile menu
     let isOpen = false;
-    mobileBtn.addEventListener('click', function() {
+    
+    function toggleMenu() {
         isOpen = !isOpen;
+        console.log('Mobile menu toggled:', isOpen ? 'open' : 'closed');
         if (isOpen) {
             navList.classList.add('mobile-open');
             mobileBtn.setAttribute('aria-expanded', 'true');
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = 'hidden';
         } else {
             navList.classList.remove('mobile-open');
             mobileBtn.setAttribute('aria-expanded', 'false');
+            // Restore body scroll
+            document.body.style.overflow = '';
         }
-    });
+    }
 
-    // Close menu when clicking a link
-    const navLinks = navList.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
+    function closeMenu() {
+        if (isOpen) {
             isOpen = false;
             navList.classList.remove('mobile-open');
             mobileBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Add event listeners
+    mobileBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    // Touch support for mobile
+    mobileBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    // Close button event listeners
+    closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeMenu();
+    });
+
+    closeBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMenu();
+    });
+
+    // Close menu when clicking a link
+    const navLinks = navList.querySelectorAll('.nav-link, .pen-mode-btn');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            closeMenu();
         });
     });
 
     // Close menu when clicking outside
     document.addEventListener('click', function(e) {
         if (isOpen && !nav.contains(e.target)) {
-            isOpen = false;
-            navList.classList.remove('mobile-open');
-            mobileBtn.setAttribute('aria-expanded', 'false');
+            closeMenu();
         }
     });
 
     // Close menu on escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isOpen) {
-            isOpen = false;
-            navList.classList.remove('mobile-open');
-            mobileBtn.setAttribute('aria-expanded', 'false');
+            closeMenu();
         }
     });
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', function() {
+        setTimeout(closeMenu, 100);
+    });
+
+    console.log('Mobile menu initialized successfully');
 }
 
 function removeMobileMenu() {
     const mobileBtn = document.querySelector('.mobile-menu-btn');
+    const closeBtn = document.querySelector('.mobile-close-btn');
     const navList = document.querySelector('.nav-list');
 
     if (mobileBtn) {
         mobileBtn.remove();
     }
+    if (closeBtn) {
+        closeBtn.remove();
+    }
     if (navList) {
         navList.classList.remove('mobile-open');
         navList.style.cssText = '';
     }
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
 }
 
 // Utility functions
@@ -870,4 +1283,317 @@ function initializePenMode() {
     updatePenSizeDisplay();
 
     console.log('Pen Mode system initialized');
+}
+
+// Sheet Enlargement and Annotation System
+function initializeSheetEnlargement() {
+    const sheetModal = document.getElementById('sheetModal');
+    const sheetModalImage = document.getElementById('sheetModalImage');
+    const sheetModalTitle = document.getElementById('sheetModalTitle');
+    const closeSheetModal = document.getElementById('closeSheetModal');
+    const penModeModalBtn = document.getElementById('penModeModalBtn');
+    const downloadAnnotatedBtn = document.getElementById('downloadAnnotatedBtn');
+    const sheetPenModeInterface = document.getElementById('sheetPenModeInterface');
+    const sheetDrawingCanvas = document.getElementById('sheetDrawingCanvas');
+    
+    let isSheetModalOpen = false;
+    let isSheetPenModeActive = false;
+    let currentSheetId = '';
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let lastX = 0;
+    let lastY = 0;
+
+    // Initialize sheet modal pen mode
+    function initializeSheetPenMode() {
+        const sheetPenTool = document.getElementById('sheetPenTool');
+        const sheetEraserTool = document.getElementById('sheetEraserTool');
+        const sheetPenSize = document.getElementById('sheetPenSize');
+        const sheetPenSizeValue = document.getElementById('sheetPenSizeValue');
+        const sheetPenColor = document.getElementById('sheetPenColor');
+        const sheetClearAll = document.getElementById('sheetClearAll');
+        const sheetClosePenMode = document.getElementById('sheetClosePenMode');
+
+        // Initialize canvas
+        function initSheetCanvas() {
+            const ctx = sheetDrawingCanvas.getContext('2d');
+            const container = sheetDrawingCanvas.parentElement;
+            
+            // Set canvas size to match container
+            sheetDrawingCanvas.width = container.offsetWidth;
+            sheetDrawingCanvas.height = container.offsetHeight;
+            
+            // Set default drawing properties
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Load saved annotations for this sheet
+            loadSheetAnnotations();
+        }
+
+        // Switch between pen and eraser tools
+        function switchSheetTool(tool) {
+            currentTool = tool;
+            const ctx = sheetDrawingCanvas.getContext('2d');
+            
+            if (tool === 'pen') {
+                sheetPenTool.classList.add('active');
+                sheetEraserTool.classList.remove('active');
+                sheetDrawingCanvas.classList.remove('eraser');
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (tool === 'eraser') {
+                sheetEraserTool.classList.add('active');
+                sheetPenTool.classList.remove('active');
+                sheetDrawingCanvas.classList.add('eraser');
+                ctx.globalCompositeOperation = 'destination-out';
+            }
+        }
+
+        // Start drawing
+        function startSheetDrawing(e) {
+            if (!isSheetPenModeActive) return;
+            
+            isDrawing = true;
+            const rect = sheetDrawingCanvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+            
+            const ctx = sheetDrawingCanvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+        }
+
+        // Draw
+        function drawSheet(e) {
+            if (!isDrawing || !isSheetPenModeActive) return;
+            
+            const rect = sheetDrawingCanvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            const ctx = sheetDrawingCanvas.getContext('2d');
+            ctx.strokeStyle = currentTool === 'pen' ? sheetPenColor.value : 'rgba(0,0,0,0)';
+            ctx.lineWidth = parseInt(sheetPenSize.value);
+            
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            lastX = currentX;
+            lastY = currentY;
+            
+            // Save to localStorage
+            saveSheetAnnotations();
+        }
+
+        // Stop drawing
+        function stopSheetDrawing() {
+            if (!isDrawing) return;
+            
+            isDrawing = false;
+            const ctx = sheetDrawingCanvas.getContext('2d');
+            ctx.beginPath();
+        }
+
+        // Clear all annotations
+        function clearAllSheetAnnotations() {
+            const ctx = sheetDrawingCanvas.getContext('2d');
+            ctx.clearRect(0, 0, sheetDrawingCanvas.width, sheetDrawingCanvas.height);
+            localStorage.removeItem(`sheetAnnotations_${currentSheetId}`);
+        }
+
+        // Save annotations to localStorage
+        function saveSheetAnnotations() {
+            const dataURL = sheetDrawingCanvas.toDataURL();
+            localStorage.setItem(`sheetAnnotations_${currentSheetId}`, dataURL);
+        }
+
+        // Load annotations from localStorage
+        function loadSheetAnnotations() {
+            const savedData = localStorage.getItem(`sheetAnnotations_${currentSheetId}`);
+            if (savedData) {
+                const img = new Image();
+                img.onload = function() {
+                    const ctx = sheetDrawingCanvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = savedData;
+            }
+        }
+
+        // Update pen size display
+        function updateSheetPenSizeDisplay() {
+            sheetPenSizeValue.textContent = sheetPenSize.value;
+        }
+
+        // Toggle sheet pen mode
+        function toggleSheetPenMode() {
+            isSheetPenModeActive = !isSheetPenModeActive;
+            
+            if (isSheetPenModeActive) {
+                sheetPenModeInterface.style.display = 'block';
+                sheetDrawingCanvas.classList.add('active');
+                penModeModalBtn.classList.add('active');
+                initSheetCanvas();
+            } else {
+                sheetPenModeInterface.style.display = 'none';
+                sheetDrawingCanvas.classList.remove('active');
+                sheetDrawingCanvas.classList.remove('eraser');
+                penModeModalBtn.classList.remove('active');
+            }
+        }
+
+        // Download annotated version
+        function downloadAnnotatedSheet() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = sheetModalImage;
+            
+            // Set canvas size to match image
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            
+            // Draw the original image
+            ctx.drawImage(img, 0, 0);
+            
+            // Draw annotations on top
+            const annotationCanvas = sheetDrawingCanvas;
+            const annotationCtx = annotationCanvas.getContext('2d');
+            const annotationData = annotationCtx.getImageData(0, 0, annotationCanvas.width, annotationCanvas.height);
+            
+            // Scale annotations to match image size
+            const scaleX = img.naturalWidth / annotationCanvas.width;
+            const scaleY = img.naturalHeight / annotationCanvas.height;
+            
+            ctx.save();
+            ctx.scale(scaleX, scaleY);
+            ctx.drawImage(annotationCanvas, 0, 0);
+            ctx.restore();
+            
+            // Download the result
+            const link = document.createElement('a');
+            link.download = `annotated_${currentSheetId}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // Event listeners
+        penModeModalBtn.addEventListener('click', toggleSheetPenMode);
+        sheetPenTool.addEventListener('click', () => switchSheetTool('pen'));
+        sheetEraserTool.addEventListener('click', () => switchSheetTool('eraser'));
+        sheetPenSize.addEventListener('input', updateSheetPenSizeDisplay);
+        sheetClearAll.addEventListener('click', clearAllSheetAnnotations);
+        sheetClosePenMode.addEventListener('click', toggleSheetPenMode);
+        downloadAnnotatedBtn.addEventListener('click', downloadAnnotatedSheet);
+
+        // Drawing events
+        sheetDrawingCanvas.addEventListener('mousedown', startSheetDrawing);
+        sheetDrawingCanvas.addEventListener('mousemove', drawSheet);
+        sheetDrawingCanvas.addEventListener('mouseup', stopSheetDrawing);
+        sheetDrawingCanvas.addEventListener('mouseout', stopSheetDrawing);
+
+        // Touch events for mobile
+        sheetDrawingCanvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            sheetDrawingCanvas.dispatchEvent(mouseEvent);
+        });
+
+        sheetDrawingCanvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            sheetDrawingCanvas.dispatchEvent(mouseEvent);
+        });
+
+        sheetDrawingCanvas.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            const mouseEvent = new MouseEvent('mouseup', {});
+            sheetDrawingCanvas.dispatchEvent(mouseEvent);
+        });
+
+        // Initialize pen size display
+        updateSheetPenSizeDisplay();
+    }
+
+    // Open sheet modal
+    function openSheetModal(sheetSrc, sheetTitle, sheetId) {
+        currentSheetId = sheetId;
+        sheetModalImage.src = sheetSrc;
+        sheetModalTitle.textContent = sheetTitle;
+        sheetModal.style.display = 'flex';
+        isSheetModalOpen = true;
+        
+        // Initialize pen mode for this sheet
+        initializeSheetPenMode();
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close sheet modal
+    function closeSheetModal() {
+        sheetModal.style.display = 'none';
+        isSheetModalOpen = false;
+        isSheetPenModeActive = false;
+        sheetPenModeInterface.style.display = 'none';
+        sheetDrawingCanvas.classList.remove('active');
+        penModeModalBtn.classList.remove('active');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+    }
+
+    // Add click listeners to all sheet images
+    function addSheetClickListeners() {
+        const sheetImages = document.querySelectorAll('.sheet-card img, .rendering-card img');
+        
+        sheetImages.forEach((img, index) => {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() {
+                const sheetTitle = this.closest('.sheet-card, .rendering-card').querySelector('h4').textContent;
+                const sheetId = `sheet_${index}_${Date.now()}`;
+                openSheetModal(this.src, sheetTitle, sheetId);
+            });
+        });
+    }
+
+    // Event listeners
+    closeSheetModal.addEventListener('click', closeSheetModal);
+    
+    // Close modal when clicking outside
+    sheetModal.addEventListener('click', function(e) {
+        if (e.target === sheetModal) {
+            closeSheetModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isSheetModalOpen) {
+            closeSheetModal();
+        }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (isSheetModalOpen && isSheetPenModeActive) {
+            const container = sheetDrawingCanvas.parentElement;
+            sheetDrawingCanvas.width = container.offsetWidth;
+            sheetDrawingCanvas.height = container.offsetHeight;
+            loadSheetAnnotations();
+        }
+    });
+
+    // Initialize
+    addSheetClickListeners();
+    
+    console.log('Sheet Enlargement system initialized');
 }
