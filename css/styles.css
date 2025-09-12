@@ -56,12 +56,25 @@ body {
 
 /* Override crosshair cursor when hovering over Google Maps */
 body:has(iframe[src*="google.com/maps"]:hover) {
-    cursor: default;
+    cursor: default !important;
 }
 
 /* Fallback for browsers that don't support :has() */
 iframe[src*="google.com/maps"]:hover ~ * {
-    cursor: default;
+    cursor: default !important;
+}
+
+/* Ensure cursor is always visible and not transparent */
+iframe[src*="google.com/maps"] {
+    cursor: default !important;
+    pointer-events: auto !important;
+}
+
+/* Force visible cursor on all map-related elements */
+iframe[src*="google.com/maps"]:hover,
+iframe[src*="google.com/maps"]:focus,
+iframe[src*="google.com/maps"]:active {
+    cursor: default !important;
 }
 
 /* Bottom HUD to align XY, Search and Return-to-top */
@@ -290,6 +303,16 @@ iframe[src*="google.com/maps"]:hover {
 }
 
 .sheet-card iframe[src*="google.com/maps"]:hover {
+    cursor: default !important;
+}
+
+/* Ensure map containers also have proper cursor */
+.sheet-card:has(iframe[src*="google.com/maps"]):hover {
+    cursor: default !important;
+}
+
+/* Force visible cursor on map areas */
+iframe[src*="google.com/maps"] * {
     cursor: default !important;
 }
 

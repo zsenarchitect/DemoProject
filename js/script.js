@@ -2739,11 +2739,13 @@ function initializeGoogleMapCursor() {
         iframe.addEventListener('mouseenter', function() {
             // Hide crosshair cursor when hovering over map
             document.body.style.cursor = 'default';
+            iframe.style.cursor = 'default';
         });
         
         iframe.addEventListener('mouseleave', function() {
             // Restore crosshair cursor when leaving map
             document.body.style.cursor = 'crosshair';
+            iframe.style.cursor = 'default';
         });
         
         // Also handle the container div
@@ -2752,15 +2754,25 @@ function initializeGoogleMapCursor() {
             container.addEventListener('mouseenter', function() {
                 if (container.contains(iframe)) {
                     document.body.style.cursor = 'default';
+                    container.style.cursor = 'default';
                 }
             });
             
             container.addEventListener('mouseleave', function() {
                 if (container.contains(iframe)) {
                     document.body.style.cursor = 'crosshair';
+                    container.style.cursor = 'auto';
                 }
             });
         }
+        
+        // Add pointer events to ensure proper cursor behavior
+        iframe.style.pointerEvents = 'auto';
+        
+        // Force cursor style on the iframe
+        iframe.addEventListener('load', function() {
+            iframe.style.cursor = 'default';
+        });
     });
     
     console.log('Google Map cursor behavior initialized');
