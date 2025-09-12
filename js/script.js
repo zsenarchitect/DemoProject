@@ -2149,9 +2149,9 @@ function initializeDownloadFunctionality() {
         
         // Try different URL formats for the PDF
         const pdfPaths = [
-            'download%20content/Floor%20Plan-combined.pdf',
-            'download content/Floor Plan-combined.pdf',
-            'download content/Floor%20Plan-combined.pdf'
+            'download-content/Floor%20Plan-combined.pdf',
+            'download-content/Floor Plan-combined.pdf',
+            'download-content/Floor%20Plan-combined.pdf'
         ];
         
         let downloadAttempted = false;
