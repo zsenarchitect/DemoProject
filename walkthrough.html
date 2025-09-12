@@ -28,6 +28,15 @@
                 <li><a href="walkthrough.html" class="nav-link active">Walkthrough</a></li>
                 <li><a href="about.html" class="nav-link">About</a></li>
                 <li><a href="download.html" class="nav-link">Download</a></li>
+                <li><button id="penModeBtn" class="pen-mode-btn" title="Toggle Pen Mode">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Pen Mode
+                </button></li>
             </ul>
         </div>
     </nav>
@@ -43,7 +52,7 @@
                 <h3>Interactive 3D Model</h3>
                 <div class="walkthru-container">
                     <iframe
-                        src="https://enscape3d.com/projects/demo-project"
+                        src="https://api2.enscape3d.com/v1/view/link/9712c86a-22b0-4d0a-9c94-7cc7d04a7377/e3fad6c7-5ff7-482c-b2ca-8ae8bc50eb98"
                         width="100%"
                         height="100%"
                         frameborder="0"
@@ -60,9 +69,8 @@
             <div class="walkthru-viewer">
                 <h3>Walkthrough Video</h3>
                 <div class="walkthru-container">
-                    <video class="walkthru-video" id="walkthroughVideo" poster="assets/images/video-poster.jpg">
-                        <source src="assets/videos/walkthrough.mp4" type="video/mp4">
-                        <source src="assets/videos/walkthrough.webm" type="video/webm">
+                    <video class="walkthru-video" id="walkthroughVideo" poster="rendering/Villa_Exterior.png">
+                        <source src="video/walk thru.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
 
@@ -113,6 +121,53 @@
             </div>
         </section>
     </main>
+
+    <!-- Pen Mode Interface -->
+    <div id="penModeInterface" class="pen-mode-interface" style="display: none;">
+        <div class="pen-toolbar">
+            <div class="pen-tools">
+                <button id="penTool" class="pen-tool-btn active" title="Pen Tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 19l7-7 3 3-7 7-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 2l7.586 7.586" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+                <button id="eraserTool" class="pen-tool-btn" title="Eraser Tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 21h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 3l8 8-8 8-8-8 8-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pen-controls">
+                <label for="penSize">Size:</label>
+                <input type="range" id="penSize" min="1" max="20" value="3" class="pen-size-slider">
+                <span id="penSizeValue">3</span>
+                <label for="penColor">Color:</label>
+                <input type="color" id="penColor" value="#ff6b35" class="pen-color-picker">
+            </div>
+            <div class="pen-actions">
+                <button id="clearAll" class="pen-action-btn" title="Clear All Annotations">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Clear All
+                </button>
+                <button id="closePenMode" class="pen-action-btn" title="Close Pen Mode">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drawing Canvas Overlay -->
+    <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
 
     <!-- Footer -->
     <footer class="footer">

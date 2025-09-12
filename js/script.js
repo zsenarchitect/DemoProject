@@ -4,9 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
     initializeNavigation();
     initializeVideoPlayer();
+    initializeBackgroundVideo();
     initializeScrollEffects();
     initializeResponsiveMenu();
     initializeCADCrosshair();
+    initializePenMode();
 });
 
 // Navigation functionality
@@ -62,6 +64,88 @@ function updateActiveNavOnScroll() {
             updateActiveNavLink(sectionId);
         }
     });
+}
+
+// Background video functionality
+function initializeBackgroundVideo() {
+    const backgroundVideo = document.querySelector('.hero-background video');
+    if (!backgroundVideo) {
+        console.warn('Background video element not found');
+        return;
+    }
+
+    console.log('Initializing background video...');
+
+    // Add debugging info
+    backgroundVideo.addEventListener('loadstart', () => console.log('Video load started'));
+    backgroundVideo.addEventListener('loadedmetadata', () => console.log('Video metadata loaded'));
+    backgroundVideo.addEventListener('loadeddata', () => console.log('Video data loaded'));
+    backgroundVideo.addEventListener('canplay', () => console.log('Video can start playing'));
+    backgroundVideo.addEventListener('canplaythrough', () => console.log('Video can play through without stopping'));
+
+    // Ensure video plays on load
+    backgroundVideo.addEventListener('loadeddata', function() {
+        console.log('Background video loaded successfully, attempting to play...');
+        this.play().catch(error => {
+            console.log('Autoplay prevented:', error);
+            // Try to play on user interaction
+            document.addEventListener('click', function playVideo() {
+                console.log('User interaction detected, attempting to play video...');
+                backgroundVideo.play().catch(console.log);
+                document.removeEventListener('click', playVideo);
+            }, { once: true });
+        });
+    });
+
+    // Handle video errors
+    backgroundVideo.addEventListener('error', function(e) {
+        console.error('Background video failed to load:', e);
+        console.error('Video error details:', this.error);
+        // Show fallback image
+        const fallbackImg = this.querySelector('img');
+        if (fallbackImg) {
+            console.log('Showing fallback image');
+            this.style.display = 'none';
+            fallbackImg.style.display = 'block';
+        }
+    });
+
+    // Ensure video plays when it becomes visible
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                console.log('Video is visible, attempting to play...');
+                backgroundVideo.play().catch(console.log);
+            }
+        });
+    });
+    
+    observer.observe(backgroundVideo);
+
+    // Add video status display for debugging
+    const statusDisplay = document.createElement('div');
+    statusDisplay.id = 'video-status';
+    statusDisplay.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 1000;
+    `;
+    statusDisplay.textContent = 'Video: Loading...';
+    document.body.appendChild(statusDisplay);
+
+    // Update status display
+    backgroundVideo.addEventListener('loadstart', () => statusDisplay.textContent = 'Video: Loading...');
+    backgroundVideo.addEventListener('loadeddata', () => statusDisplay.textContent = 'Video: Loaded');
+    backgroundVideo.addEventListener('play', () => statusDisplay.textContent = 'Video: Playing');
+    backgroundVideo.addEventListener('pause', () => statusDisplay.textContent = 'Video: Paused');
+    backgroundVideo.addEventListener('error', () => statusDisplay.textContent = 'Video: Error');
 }
 
 // Video player functionality
@@ -515,4 +599,277 @@ function initializeCADCrosshair() {
 
     // Start initialization
     init();
+}
+
+// Pen Mode functionality
+function initializePenMode() {
+    const penModeBtn = document.getElementById('penModeBtn');
+    const penModeInterface = document.getElementById('penModeInterface');
+    const drawingCanvas = document.getElementById('drawingCanvas');
+    const penTool = document.getElementById('penTool');
+    const eraserTool = document.getElementById('eraserTool');
+    const penSize = document.getElementById('penSize');
+    const penSizeValue = document.getElementById('penSizeValue');
+    const penColor = document.getElementById('penColor');
+    const clearAll = document.getElementById('clearAll');
+    const closePenMode = document.getElementById('closePenMode');
+
+    let isPenModeActive = false;
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let lastX = 0;
+    let lastY = 0;
+    let brushSizeIndicator = null;
+
+    // Initialize canvas
+    function initCanvas() {
+        const ctx = drawingCanvas.getContext('2d');
+        // Set canvas size to match the entire document
+        drawingCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
+        drawingCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+        
+        // Set default drawing properties
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalCompositeOperation = 'source-over';
+        
+        // Create brush size indicator
+        createBrushSizeIndicator();
+        
+        // Load saved annotations
+        loadAnnotations();
+    }
+
+    // Create brush size indicator
+    function createBrushSizeIndicator() {
+        if (brushSizeIndicator) {
+            brushSizeIndicator.remove();
+        }
+        
+        brushSizeIndicator = document.createElement('div');
+        brushSizeIndicator.id = 'brush-size-indicator';
+        brushSizeIndicator.style.cssText = `
+            position: fixed;
+            width: ${parseInt(penSize.value) * 2}px;
+            height: ${parseInt(penSize.value) * 2}px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            background: rgba(255, 107, 53, 0.1);
+            pointer-events: none;
+            z-index: 10000;
+            display: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+        `;
+        document.body.appendChild(brushSizeIndicator);
+    }
+
+    // Update brush size indicator
+    function updateBrushSizeIndicator(e) {
+        if (!isPenModeActive || !brushSizeIndicator) return;
+        
+        const size = parseInt(penSize.value);
+        brushSizeIndicator.style.width = `${size * 2}px`;
+        brushSizeIndicator.style.height = `${size * 2}px`;
+        brushSizeIndicator.style.left = e.clientX + 'px';
+        brushSizeIndicator.style.top = e.clientY + 'px';
+        brushSizeIndicator.style.display = 'block';
+    }
+
+    // Hide brush size indicator
+    function hideBrushSizeIndicator() {
+        if (brushSizeIndicator) {
+            brushSizeIndicator.style.display = 'none';
+        }
+    }
+
+    // Toggle pen mode
+    function togglePenMode() {
+        isPenModeActive = !isPenModeActive;
+        
+        if (isPenModeActive) {
+            penModeInterface.style.display = 'block';
+            drawingCanvas.classList.add('active');
+            penModeBtn.classList.add('active');
+            initCanvas();
+        } else {
+            penModeInterface.style.display = 'none';
+            drawingCanvas.classList.remove('active');
+            drawingCanvas.classList.remove('eraser');
+            penModeBtn.classList.remove('active');
+        }
+    }
+
+    // Switch between pen and eraser tools
+    function switchTool(tool) {
+        currentTool = tool;
+        const ctx = drawingCanvas.getContext('2d');
+        
+        if (tool === 'pen') {
+            penTool.classList.add('active');
+            eraserTool.classList.remove('active');
+            drawingCanvas.classList.remove('eraser');
+            ctx.globalCompositeOperation = 'source-over';
+        } else if (tool === 'eraser') {
+            eraserTool.classList.add('active');
+            penTool.classList.remove('active');
+            drawingCanvas.classList.add('eraser');
+            ctx.globalCompositeOperation = 'destination-out';
+        }
+    }
+
+    // Start drawing
+    function startDrawing(e) {
+        if (!isPenModeActive) return;
+        
+        isDrawing = true;
+        // Use page coordinates instead of canvas-relative coordinates
+        lastX = e.pageX;
+        lastY = e.pageY;
+        
+        const ctx = drawingCanvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+    }
+
+    // Draw
+    function draw(e) {
+        if (!isDrawing || !isPenModeActive) return;
+        
+        // Use page coordinates for consistent positioning
+        const currentX = e.pageX;
+        const currentY = e.pageY;
+        
+        const ctx = drawingCanvas.getContext('2d');
+        ctx.strokeStyle = currentTool === 'pen' ? penColor.value : 'rgba(0,0,0,0)';
+        ctx.lineWidth = parseInt(penSize.value);
+        
+        ctx.lineTo(currentX, currentY);
+        ctx.stroke();
+        
+        lastX = currentX;
+        lastY = currentY;
+        
+        // Save to localStorage
+        saveAnnotations();
+    }
+
+    // Stop drawing
+    function stopDrawing() {
+        if (!isDrawing) return;
+        
+        isDrawing = false;
+        const ctx = drawingCanvas.getContext('2d');
+        ctx.beginPath();
+    }
+
+    // Clear all annotations
+    function clearAllAnnotations() {
+        const ctx = drawingCanvas.getContext('2d');
+        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        localStorage.removeItem('penAnnotations');
+    }
+
+    // Save annotations to localStorage
+    function saveAnnotations() {
+        const dataURL = drawingCanvas.toDataURL();
+        localStorage.setItem('penAnnotations', dataURL);
+    }
+
+    // Load annotations from localStorage
+    function loadAnnotations() {
+        const savedData = localStorage.getItem('penAnnotations');
+        if (savedData) {
+            const img = new Image();
+            img.onload = function() {
+                const ctx = drawingCanvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = savedData;
+        }
+    }
+
+    // Update pen size display
+    function updatePenSizeDisplay() {
+        penSizeValue.textContent = penSize.value;
+        // Update brush indicator size
+        if (brushSizeIndicator) {
+            const size = parseInt(penSize.value);
+            brushSizeIndicator.style.width = `${size * 2}px`;
+            brushSizeIndicator.style.height = `${size * 2}px`;
+        }
+    }
+
+    // Handle window resize
+    function handleResize() {
+        if (isPenModeActive) {
+            const ctx = drawingCanvas.getContext('2d');
+            const currentData = ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
+            
+            // Update canvas size to match document dimensions
+            drawingCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
+            drawingCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+            
+            ctx.putImageData(currentData, 0, 0);
+        }
+    }
+
+    // Event listeners
+    penModeBtn.addEventListener('click', togglePenMode);
+    penTool.addEventListener('click', () => switchTool('pen'));
+    eraserTool.addEventListener('click', () => switchTool('eraser'));
+    penSize.addEventListener('input', updatePenSizeDisplay);
+    clearAll.addEventListener('click', clearAllAnnotations);
+    closePenMode.addEventListener('click', togglePenMode);
+
+    // Drawing events
+    drawingCanvas.addEventListener('mousedown', startDrawing);
+    drawingCanvas.addEventListener('mousemove', draw);
+    drawingCanvas.addEventListener('mouseup', stopDrawing);
+    drawingCanvas.addEventListener('mouseout', stopDrawing);
+
+    // Mouse move for brush indicator
+    document.addEventListener('mousemove', function(e) {
+        if (isPenModeActive) {
+            updateBrushSizeIndicator(e);
+        }
+    });
+
+    // Hide brush indicator when mouse leaves the page
+    document.addEventListener('mouseleave', hideBrushSizeIndicator);
+
+    // Touch events for mobile
+    drawingCanvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        drawingCanvas.dispatchEvent(mouseEvent);
+    });
+
+    drawingCanvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        drawingCanvas.dispatchEvent(mouseEvent);
+    });
+
+    drawingCanvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup', {});
+        drawingCanvas.dispatchEvent(mouseEvent);
+    });
+
+    // Window resize handler
+    window.addEventListener('resize', handleResize);
+
+    // Initialize pen size display
+    updatePenSizeDisplay();
+
+    console.log('Pen Mode system initialized');
 }
