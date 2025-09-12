@@ -1284,7 +1284,7 @@ function initializeCADCrosshair() {
             width: 12px;
             height: 12px;
             border: 2px solid #ff6b35;
-            border-radius: 50%;
+            /* border-radius: 50%; */
             background: rgba(255, 107, 53, 0.3);
             transform: translate(-50%, -50%);
             box-shadow: 0 0 8px rgba(255, 107, 53, 0.8);

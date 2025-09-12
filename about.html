@@ -26,7 +26,7 @@
                 <li><a href="index.html" class="nav-link">Home</a></li>
                 <li><a href="presentation.html" class="nav-link">Presentation</a></li>
                 <li><a href="walkthrough.html" class="nav-link">Walkthrough</a></li>
-                <li><a href="about.html" class="nav-link active">About</a></li>
+                <li><a href="about.html" class="nav-link active" aria-current="page">About</a></li>
                 <li><a href="download.html" class="nav-link">Download</a></li>
             </ul>
         </div>
@@ -35,39 +35,67 @@
     <!-- Main Content -->
     <main class="container" style="padding-top: var(--spacing-xl);">
         <section class="section">
-            <h1>About Our Firm</h1>
+            <h1>About Our Practice</h1>
 
             <div class="sheet-card">
-                <h2>Architecture Excellence</h2>
-                <p>We are a leading architectural firm specializing in innovative design solutions that blend functionality, aesthetics, and sustainability. With over 20 years of experience, we have successfully delivered projects ranging from residential complexes to commercial high-rises.</p>
+                <h2>Architecture with Purpose</h2>
+                <p>We design spaces that uplift daily life—balancing performance, beauty, and environmental stewardship. For more than two decades, our team has delivered work across housing, workplace, culture, and mixed‑use—always tuned to context and community.</p>
 
-                <p>Our approach combines cutting-edge technology with traditional craftsmanship, ensuring that every project not only meets the highest standards of design excellence but also addresses the unique needs and aspirations of our clients.</p>
+                <p>From early visioning to construction closeout, we partner closely with clients and collaborators, using digital craft and physical prototyping to inform decisions that stand the test of time.</p>
+
+                <ul style="margin-top: var(--spacing-md); line-height: 1.8;">
+                    <li><strong>Human-centered</strong>: experience, accessibility, and wellbeing guide every choice.</li>
+                    <li><strong>Sustainable by default</strong>: passive strategies first, technology where it matters.</li>
+                    <li><strong>Crafted deliverables</strong>: clear drawings, data-rich models, and concise narratives.</li>
+                </ul>
             </div>
 
             <div class="sheet-card">
-                <h2>Our Services</h2>
+                <h2>Services</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg);">
                     <div>
                         <h4>Architectural Design</h4>
-                        <p>Comprehensive design services from concept to construction documents, ensuring every detail is meticulously planned.</p>
+                        <p>Concept through CA with rigorous coordination, code strategy, and cost awareness.</p>
                     </div>
                     <div>
                         <h4>Interior Design</h4>
-                        <p>Holistic interior solutions that create functional and beautiful spaces reflecting our clients' vision and lifestyle.</p>
+                        <p>Material systems, lighting, and furniture planning tuned to brand and behavior.</p>
                     </div>
                     <div>
                         <h4>Sustainable Design</h4>
-                        <p>Green building expertise integrating environmentally responsible practices and energy-efficient technologies.</p>
+                        <p>Envelope-first performance, daylighting, low‑carbon assemblies, and certification guidance.</p>
                     </div>
                     <div>
                         <h4>Project Management</h4>
-                        <p>Full-service project management ensuring timely delivery, budget compliance, and quality assurance.</p>
+                        <p>Schedule, risk, and quality control with transparent communication and stakeholder alignment.</p>
                     </div>
+                </div>
+                <div style="margin-top: var(--spacing-lg);">
+                    <a href="presentation.html" class="btn" style="margin-right: var(--spacing-md);">View Presentation</a>
+                    <a href="walkthrough.html" class="btn btn-secondary">Watch Walkthrough</a>
                 </div>
             </div>
 
             <div class="sheet-card">
-                <h2>Contact Information</h2>
+                <h2>Featured Projects</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg);">
+                    <figure style="margin: 0;">
+                        <img src="rendering/Villa_Exterior_01.png" alt="Exterior rendering of a villa with articulated volumes and warm materials" style="width:100%; height:auto; border-radius: 8px;">
+                        <figcaption style="margin-top: .5rem; color: var(--text-secondary);">Contextual massing and high‑performance envelope</figcaption>
+                    </figure>
+                    <figure style="margin: 0;">
+                        <img src="rendering/Villa_Interior_02.png" alt="Interior rendering of a living space with soft daylight and natural finishes" style="width:100%; height:auto; border-radius: 8px;">
+                        <figcaption style="margin-top: .5rem; color: var(--text-secondary);">Daylight‑driven interiors and healthy materials</figcaption>
+                    </figure>
+                    <figure style="margin: 0;">
+                        <img src="rendering/Villa_Exterior-Nightime.png" alt="Nighttime exterior rendering with warm interior glow" style="width:100%; height:auto; border-radius: 8px;">
+                        <figcaption style="margin-top: .5rem; color: var(--text-secondary);">Thoughtful lighting and placemaking</figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="sheet-card">
+                <h2>Contact</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg);">
                     <div>
                         <h4>Office Address</h4>
@@ -80,9 +108,9 @@
                     </div>
                     <div>
                         <h4>Contact Details</h4>
-                        <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-                        <p><strong>Email:</strong> info@architecturedemo.com</p>
-                        <p><strong>Website:</strong> www.architecturedemo.com</p>
+                        <p><strong>Phone:</strong> <a href="tel:+15551234567">+1 (555) 123‑4567</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:info@architecturedemo.com">info@architecturedemo.com</a></p>
+                        <p><strong>Website:</strong> <a href="https://www.architecturedemo.com" rel="noopener">architecturedemo.com</a></p>
                     </div>
                     <div>
                         <h4>Business Hours</h4>
@@ -93,38 +121,38 @@
                 </div>
 
                 <div style="margin-top: var(--spacing-xl); text-align: center;">
-                    <a href="mailto:info@architecturedemo.com" class="btn">
-                        Send us an Email
+                    <a href="mailto:info@architecturedemo.com" class="btn" aria-label="Email Architecture Demo">
+                        Get in Touch
                     </a>
                 </div>
             </div>
 
             <div class="sheet-card">
-                <h2>Our Team</h2>
+                <h2>Team</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg);">
                     <div style="text-align: center;">
-                        <div style="width: 120px; height: 120px; background: var(--bg-tertiary); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-primary);">
-                            👤
+                        <div style="width: 120px; height: 120px; background: var(--bg-tertiary); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-primary);" role="img" aria-label="Profile avatar">
+                            <span aria-hidden="true">👤</span>
                         </div>
                         <h4>Jazzy Li</h4>
                         <p style="color: var(--text-secondary);">Principal Architect</p>
-                        <p>Leading design innovation with 15+ years of experience in sustainable architecture.</p>
+                        <p>Leads design strategy and performance with 15+ years in low‑carbon architecture.</p>
                     </div>
                     <div style="text-align: center;">
-                        <div style="width: 120px; height: 120px; background: var(--bg-tertiary); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-primary);">
-                            👤
+                        <div style="width: 120px; height: 120px; background: var(--bg-tertiary); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-primary);" role="img" aria-label="Profile avatar">
+                            <span aria-hidden="true">👤</span>
                         </div>
                         <h4>Sen Zhang</h4>
                         <p style="color: var(--text-secondary);">Senior Designer</p>
-                        <p>Specializing in interior design and user experience, creating spaces that inspire.</p>
+                        <p>Shapes interiors and user journeys—elegant, durable, and easy to maintain.</p>
                     </div>
                     <div style="text-align: center;">
-                        <div style="width: 120px; height: 120px; background: var(--bg-tertiary); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-primary);">
-                            👤
+                        <div style="width: 120px; height: 120px; background: var(--bg-tertiary); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-primary);" role="img" aria-label="Profile avatar">
+                            <span aria-hidden="true">👤</span>
                         </div>
                         <h4>Rem Koolhaas</h4>
                         <p style="color: var(--text-secondary);">Intern</p>
-                        <p>Ensuring seamless project execution from concept to completion with precision.</p>
+                        <p>Supports research, modeling, and documentation for smooth project delivery.</p>
                     </div>
                 </div>
             </div>
