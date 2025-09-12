@@ -1460,10 +1460,13 @@ function setupBottomHud() {
         hud.appendChild(coordDisplay);
     }
 
-    // Attach Search (middle, only on presentation page)
+    // Attach Search (middle, only on presentation page, but not on mobile)
     if (searchContainer && searchContainer.parentElement !== hud) {
-        searchContainer.classList.add('in-hud');
-        hud.appendChild(searchContainer);
+        // Only add to HUD on desktop - mobile has its own positioning
+        if (window.innerWidth > 768) {
+            searchContainer.classList.add('in-hud');
+            hud.appendChild(searchContainer);
+        }
     }
 
     // Attach Return-to-top (right)
@@ -2507,6 +2510,46 @@ function initializeSearchFunctionality() {
             }
         }
     });
+    
+    // Mobile-specific improvements
+    function addMobileSearchImprovements() {
+        // Prevent zoom on input focus on iOS
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+                const originalContent = viewport.getAttribute('content');
+                searchInput.addEventListener('focus', function() {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                });
+                searchInput.addEventListener('blur', function() {
+                    viewport.setAttribute('content', originalContent);
+                });
+            }
+        }
+        
+        // Add touch feedback for search results
+        searchResults.addEventListener('touchstart', function(e) {
+            const resultItem = e.target.closest('.search-result-item');
+            if (resultItem) {
+                resultItem.style.transition = 'transform 0.1s ease';
+            }
+        });
+        
+        searchResults.addEventListener('touchend', function(e) {
+            const resultItem = e.target.closest('.search-result-item');
+            if (resultItem) {
+                resultItem.style.transition = '';
+            }
+        });
+        
+        // Improve search result scrolling on mobile
+        if ('ontouchstart' in window) {
+            searchResults.style.webkitOverflowScrolling = 'touch';
+        }
+    }
+    
+    // Initialize mobile improvements
+    addMobileSearchImprovements();
     
     // Initialize search data
     initializeSearchData();
