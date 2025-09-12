@@ -89,6 +89,7 @@ body {
     position: static;
     width: 56px;
     height: 56px;
+    margin-left: auto;
 }
 
 /* Typography */

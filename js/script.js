@@ -1839,6 +1839,12 @@ function initializeSheetEnlargement() {
 
 // Return to Top functionality
 function initializeReturnToTop() {
+    // Only enable on presentation page (long page)
+    const isPresentationPage = document.querySelector('.side-nav') !== null;
+    if (!isPresentationPage) {
+        return;
+    }
+
     // Create return to top button
     const returnToTopBtn = document.createElement('button');
     returnToTopBtn.className = 'return-to-top';
@@ -1905,6 +1911,9 @@ function initializeReturnToTop() {
     toggleReturnToTop();
     
     console.log('Return to Top system initialized');
+
+    // Place into bottom HUD alignment
+    try { setupBottomHud(); } catch (e) { /* noop */ }
 }
 
 // Download functionality for renderings and PDF
