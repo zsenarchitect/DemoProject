@@ -45,6 +45,7 @@ DemoProject/
 - **HTML5**: Semantic markup and structure
 - **CSS3**: Custom properties, flexbox, grid, animations
 - **Vanilla JavaScript**: Interactive functionality
+- **Git LFS**: Large file storage for architectural content
 - **Google Fonts**: Inter and JetBrains Mono fonts
 - **SVG Icons**: Custom vector graphics
 
@@ -55,6 +56,29 @@ DemoProject/
 - **Accent Color**: #ff6b35 (Neon Orange)
 - **Text Primary**: #ffffff (White)
 - **Text Secondary**: #cccccc (Light Gray)
+
+## Git LFS (Large File Storage)
+
+This repository uses **Git LFS** to efficiently handle large architectural files:
+
+### Large File Types Tracked by LFS:
+- **PDFs** (*.pdf) - Architectural drawings and documents
+- **Images** (*.png, *.jpg, *.jpeg, *.gif) - Renderings and assets
+- **Videos** (*.mp4, *.webm) - Walkthrough videos
+- **3D Models** (*.rvt) - Revit files
+- **Executables** (*.exe) - Software installers
+- **Archives** (*.zip) - Compressed files
+
+### Benefits:
+- **Faster cloning**: Large files don't bloat the repository
+- **Efficient storage**: Git LFS optimizes large file handling
+- **Download compatibility**: All download buttons still work normally
+- **Version control**: Large files are still tracked and versioned
+
+### For Contributors:
+1. Ensure Git LFS is installed: `git lfs install`
+2. Large files are automatically handled by LFS
+3. Download links remain functional for website visitors
 
 ## Development Workflow
 
