@@ -43,13 +43,15 @@ Thumbs.db
 # Large files (prevent files > 30MB from being committed)
 *.rvt
 *.exe
-*.mp4
 *.mov
 *.avi
 *.mkv
 *.zip
 *.rar
 *.7z
+
+# Allow MP4 files for background videos
+# *.mp4 - commented out to allow video files
 
 # Note: Large files should use Git LFS or external storage
 # These directories contain LFS-tracked files
