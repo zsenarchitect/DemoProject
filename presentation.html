@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="Interactive project presentation with architectural drawings, renderings, and floor plans">
+    <meta name="keywords" content="architecture, presentation, drawings, renderings, floor plans">
+    <meta name="author" content="Architecture Demo">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Architecture Demo">
+    <link rel="apple-touch-icon" href="assets/images/favicon.svg">
+    <title>Project Presentation - Architecture Demo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <!-- Preconnect to Google Fonts for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="presentation.html" class="nav-link active">Presentation</a></li>
+                <li><a href="walkthrough.html" class="nav-link">Walkthrough</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="download.html" class="nav-link">Download</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Side Navigation -->
+    <aside class="side-nav">
+        <ul class="side-nav-list">
+            <li class="side-nav-item">
+                <a href="#rendering" class="side-nav-link active">Rendering</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="#floor-plan" class="side-nav-link">Floor Plan</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="#elevation" class="side-nav-link">Elevation</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="#section" class="side-nav-link">Section</a>
+            </li>
+            <li class="side-nav-item">
+                <a href="#detail" class="side-nav-link">Detail</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Rendering Section -->
+        <section id="rendering" class="section">
+            <div class="container">
+                <h2>Rendering</h2>
+                <div class="gallery">
+                    <div class="gallery-item rendering-card">
+                        <img src="assets/images/rendering-01.png" alt="Exterior Rendering 01">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Exterior View - Main Facade</h4>
+                            <p>Main building exterior rendering showing the architectural design.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="assets/images/rendering-02.png" alt="Exterior Rendering 02">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Exterior View - Side Elevation</h4>
+                            <p>Side elevation rendering highlighting the building's profile.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="assets/images/rendering-03.png" alt="Interior Rendering 01">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Interior - Main Lobby</h4>
+                            <p>Main lobby interior rendering showcasing the space design.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item rendering-card">
+                        <img src="assets/images/rendering-04.png" alt="Interior Rendering 02">
+                        <div style="padding: var(--spacing-md);">
+                            <h4>Interior - Office Space</h4>
+                            <p>Office space interior rendering showing workspace layout.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Floor Plan Section -->
+        <section id="floor-plan" class="section">
+            <div class="container">
+                <h2>Floor Plan</h2>
+                <div class="sheet-card">
+                    <h3>Ground Floor Plan</h3>
+                    <img src="assets/images/floor-plan-ground.png" alt="Ground Floor Plan" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>Detailed floor plan showing the layout of the ground floor including entry areas, main spaces, and circulation paths.</p>
+                </div>
+                <div class="sheet-card">
+                    <h3>Typical Floor Plan</h3>
+                    <img src="assets/images/floor-plan-typical.png" alt="Typical Floor Plan" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>Typical floor plan layout for office levels showing consistent spatial organization and functional zoning.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Elevation Section -->
+        <section id="elevation" class="section">
+            <div class="container">
+                <h2>Elevation</h2>
+                <div class="sheet-card">
+                    <h3>North Elevation</h3>
+                    <img src="assets/images/elevation-north.png" alt="North Elevation" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>North facing elevation showing the building's facade design and architectural elements.</p>
+                </div>
+                <div class="sheet-card">
+                    <h3>South Elevation</h3>
+                    <img src="assets/images/elevation-south.png" alt="South Elevation" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>South facing elevation highlighting the main entrance and public facade.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Section -->
+        <section id="section" class="section">
+            <div class="container">
+                <h2>Section</h2>
+                <div class="sheet-card">
+                    <h3>Building Section A-A</h3>
+                    <img src="assets/images/section-aa.png" alt="Building Section A-A" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>Longitudinal building section showing internal spatial relationships and structural elements.</p>
+                </div>
+                <div class="sheet-card">
+                    <h3>Building Section B-B</h3>
+                    <img src="assets/images/section-bb.png" alt="Building Section B-B" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>Transverse building section illustrating floor-to-floor relationships and vertical circulation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detail Section -->
+        <section id="detail" class="section">
+            <div class="container">
+                <h2>Detail</h2>
+                <div class="sheet-card">
+                    <h3>Facade Detail - Window System</h3>
+                    <img src="assets/images/detail-window.png" alt="Window Detail" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>Detailed drawing of the curtain wall system including glazing, framing, and attachment details.</p>
+                </div>
+                <div class="sheet-card">
+                    <h3>Entrance Detail</h3>
+                    <img src="assets/images/detail-entrance.png" alt="Entrance Detail" style="width: 100%; border-radius: var(--radius-md); margin: var(--spacing-lg) 0;">
+                    <p>Scaled detail of the main entrance including door hardware, threshold, and surrounding finishes.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

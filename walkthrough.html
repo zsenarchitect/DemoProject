@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="Immersive virtual walkthrough of the architectural project with interactive 3D model">
+    <meta name="keywords" content="architecture, walkthrough, virtual reality, 3D model, interactive">
+    <meta name="author" content="Architecture Demo">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Architecture Demo">
+    <link rel="apple-touch-icon" href="assets/images/favicon.svg">
+    <title>Virtual Walkthrough - Architecture Demo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <!-- Preconnect to Google Fonts for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="presentation.html" class="nav-link">Presentation</a></li>
+                <li><a href="walkthrough.html" class="nav-link active">Walkthrough</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="download.html" class="nav-link">Download</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding-top: var(--spacing-xl);">
+        <section class="section">
+            <h1>Virtual Walkthrough</h1>
+            <p>Experience the building through an immersive virtual walkthrough. Navigate through the spaces and explore the architectural design in detail.</p>
+
+            <!-- Enscape Viewer Integration -->
+            <div class="walkthru-viewer">
+                <h3>Interactive 3D Model</h3>
+                <div class="walkthru-container">
+                    <iframe
+                        src="https://enscape3d.com/projects/demo-project"
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        allowfullscreen
+                        title="Enscape Virtual Walkthrough">
+                    </iframe>
+                </div>
+                <p class="text-secondary" style="font-size: 0.875rem; margin-top: var(--spacing-md);">
+                    Use your mouse to navigate: Left click + drag to look around, right click + drag to move, scroll to zoom.
+                </p>
+            </div>
+
+            <!-- Video Walkthrough -->
+            <div class="walkthru-viewer">
+                <h3>Walkthrough Video</h3>
+                <div class="walkthru-container">
+                    <video class="walkthru-video" id="walkthroughVideo" poster="assets/images/video-poster.jpg">
+                        <source src="assets/videos/walkthrough.mp4" type="video/mp4">
+                        <source src="assets/videos/walkthrough.webm" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>
+
+                    <!-- Custom Video Controls -->
+                    <div class="video-controls">
+                        <button class="control-btn" id="playPauseBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+
+                        <span id="currentTime" class="text-secondary" style="font-size: 0.875rem; min-width: 45px;">0:00</span>
+                        <span class="text-secondary" style="font-size: 0.875rem;">/</span>
+                        <span id="duration" class="text-secondary" style="font-size: 0.875rem; min-width: 45px;">0:00</span>
+
+                        <button class="control-btn" id="volumeBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                            </svg>
+                        </button>
+
+                        <button class="control-btn" id="fullscreenBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="sheet-card">
+                <h3>About This Walkthrough</h3>
+                <p>This virtual walkthrough showcases the key spaces and architectural features of the project. The interactive 3D model allows you to explore the building from any angle, while the video walkthrough provides a guided tour of the main areas.</p>
+
+                <h4>Key Features Explored:</h4>
+                <ul style="margin-left: var(--spacing-lg);">
+                    <li>Main entrance and lobby area</li>
+                    <li>Office spaces and collaborative areas</li>
+                    <li>Conference rooms and meeting spaces</li>
+                    <li>Outdoor spaces and landscaping</li>
+                    <li>Structural elements and material selections</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Architecture Project Demo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
