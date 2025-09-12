@@ -1028,9 +1028,9 @@ function createSideNavMobileButton() {
                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </span>
-        <span>Navigation</span>
+        <span>Minimap</span>
     `;
-    sideNavBtn.setAttribute('aria-label', 'Toggle side navigation');
+    sideNavBtn.setAttribute('aria-label', 'Toggle minimap');
     sideNavBtn.setAttribute('aria-expanded', 'false');
     
     // Insert button at the top of main content
@@ -1285,7 +1285,7 @@ function initializeCADCrosshair() {
             height: 12px;
             border: 2px solid #ff6b35;
             /* border-radius: 50%; */
-            background: rgba(255, 107, 53, 0.3);
+            background: transparent;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 8px rgba(255, 107, 53, 0.8);
         `;
