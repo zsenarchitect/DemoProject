@@ -1696,6 +1696,31 @@ body.cad-cursor {
     display: none;
 }
 
+/* Drag handle for pen mode panel */
+.sheet-pen-drag-handle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: var(--spacing-sm);
+    cursor: move;
+    color: var(--text-muted);
+    user-select: none;
+}
+
+.sheet-pen-drag-handle .dot {
+    width: 4px;
+    height: 4px;
+    background: var(--text-muted);
+    border-radius: 50%;
+}
+
+.sheet-pen-mode-interface.dragging {
+    opacity: 0.95;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+}
+
 .sheet-pen-toolbar {
     display: flex;
     align-items: center;
