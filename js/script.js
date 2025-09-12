@@ -1642,10 +1642,10 @@ function initializeDownloadFunctionality() {
     
     // List of all rendering images
     const renderingImages = [
-        'rendering/Villa_Bedroom - Video Texture.png',
+        'rendering/Villa_Bedroom-Video_Texture.png',
         'rendering/Villa_Counter.png',
         'rendering/Villa_Entrance.png',
-        'rendering/Villa_Exterior - Nightime.png',
+        'rendering/Villa_Exterior-Nightime.png',
         'rendering/Villa_Exterior_01.png',
         'rendering/Villa_Exterior_02.png',
         'rendering/Villa_Exterior.png',
@@ -1655,10 +1655,10 @@ function initializeDownloadFunctionality() {
         'rendering/Villa_Interior_03.png',
         'rendering/Villa_Interior_04.png',
         'rendering/Villa_Interior_05.png',
-        'rendering/Villa_Kitchen 2.png',
+        'rendering/Villa_Kitchen_2.png',
         'rendering/Villa_Kitchen.png',
-        'rendering/Villa_Living Room.png',
-        'rendering/Villa_Office - White Mode.png'
+        'rendering/Villa_Living_Room.png',
+        'rendering/Villa_Office-White_Mode.png'
     ];
     
     // Function to download a single image
