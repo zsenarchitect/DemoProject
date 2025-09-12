@@ -344,6 +344,11 @@ function createMobileMenu() {
     const nav = document.querySelector('.nav');
     const navList = document.querySelector('.nav-list');
 
+    // Check if mobile menu button already exists
+    if (document.querySelector('.mobile-menu-btn')) {
+        return;
+    }
+
     // Create mobile menu button
     const mobileBtn = document.createElement('button');
     mobileBtn.className = 'mobile-menu-btn';
@@ -352,48 +357,21 @@ function createMobileMenu() {
             <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     `;
-    mobileBtn.style.cssText = `
-        background: none;
-        border: none;
-        color: var(--text-primary);
-        cursor: pointer;
-        padding: var(--spacing-sm);
-        display: block;
-        margin-left: auto;
-    `;
+    mobileBtn.setAttribute('aria-label', 'Toggle mobile menu');
 
     // Insert button before nav-list
     navList.parentNode.insertBefore(mobileBtn, navList);
-
-    // Style nav-list for mobile
-    navList.style.cssText = `
-        position: fixed;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        height: calc(100vh - 100%);
-        background: var(--bg-secondary);
-        flex-direction: column;
-        padding: var(--spacing-xl);
-        transform: translateY(-100%);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        z-index: 999;
-    `;
 
     // Toggle mobile menu
     let isOpen = false;
     mobileBtn.addEventListener('click', function() {
         isOpen = !isOpen;
         if (isOpen) {
-            navList.style.transform = 'translateY(0)';
-            navList.style.opacity = '1';
-            navList.style.visibility = 'visible';
+            navList.classList.add('mobile-open');
+            mobileBtn.setAttribute('aria-expanded', 'true');
         } else {
-            navList.style.transform = 'translateY(-100%)';
-            navList.style.opacity = '0';
-            navList.style.visibility = 'hidden';
+            navList.classList.remove('mobile-open');
+            mobileBtn.setAttribute('aria-expanded', 'false');
         }
     });
 
@@ -402,10 +380,27 @@ function createMobileMenu() {
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             isOpen = false;
-            navList.style.transform = 'translateY(-100%)';
-            navList.style.opacity = '0';
-            navList.style.visibility = 'hidden';
+            navList.classList.remove('mobile-open');
+            mobileBtn.setAttribute('aria-expanded', 'false');
         });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (isOpen && !nav.contains(e.target)) {
+            isOpen = false;
+            navList.classList.remove('mobile-open');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) {
+            isOpen = false;
+            navList.classList.remove('mobile-open');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+        }
     });
 }
 
@@ -413,8 +408,11 @@ function removeMobileMenu() {
     const mobileBtn = document.querySelector('.mobile-menu-btn');
     const navList = document.querySelector('.nav-list');
 
-    if (mobileBtn) mobileBtn.remove();
+    if (mobileBtn) {
+        mobileBtn.remove();
+    }
     if (navList) {
+        navList.classList.remove('mobile-open');
         navList.style.cssText = '';
     }
 }
