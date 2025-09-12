@@ -1714,6 +1714,114 @@ function initializeSheetEnlargement() {
 
         // Initialize pen size display
         updateSheetPenSizeDisplay();
+        
+        // Add drag functionality to pen mode interface
+        initializePenModeDrag();
+    }
+    
+    // Initialize drag functionality for pen mode interface
+    function initializePenModeDrag() {
+        const penModeInterface = document.getElementById('sheetPenModeInterface');
+        const dragHandle = document.getElementById('sheetPenDragHandle');
+        
+        if (!penModeInterface || !dragHandle) return;
+        
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+        
+        // Mouse events
+        dragHandle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+        
+        // Touch events for mobile
+        dragHandle.addEventListener('touchstart', startDragTouch);
+        document.addEventListener('touchmove', dragTouch);
+        document.addEventListener('touchend', stopDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startLeft = parseInt(penModeInterface.style.left) || 16;
+            startTop = parseInt(penModeInterface.style.top) || 16;
+            
+            penModeInterface.classList.add('dragging');
+            e.preventDefault();
+        }
+        
+        function startDragTouch(e) {
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                isDragging = true;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                startLeft = parseInt(penModeInterface.style.left) || 16;
+                startTop = parseInt(penModeInterface.style.top) || 16;
+                
+                penModeInterface.classList.add('dragging');
+                e.preventDefault();
+            }
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            // Constrain to viewport
+            const rect = penModeInterface.getBoundingClientRect();
+            const maxLeft = window.innerWidth - rect.width;
+            const maxTop = window.innerHeight - rect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+            
+            penModeInterface.style.left = newLeft + 'px';
+            penModeInterface.style.top = newTop + 'px';
+            penModeInterface.style.transform = 'none';
+            
+            e.preventDefault();
+        }
+        
+        function dragTouch(e) {
+            if (!isDragging || e.touches.length !== 1) return;
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            // Constrain to viewport
+            const rect = penModeInterface.getBoundingClientRect();
+            const maxLeft = window.innerWidth - rect.width;
+            const maxTop = window.innerHeight - rect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+            
+            penModeInterface.style.left = newLeft + 'px';
+            penModeInterface.style.top = newTop + 'px';
+            penModeInterface.style.transform = 'none';
+            
+            e.preventDefault();
+        }
+        
+        function stopDrag() {
+            if (isDragging) {
+                isDragging = false;
+                penModeInterface.classList.remove('dragging');
+            }
+        }
     }
 
     // Open sheet modal
