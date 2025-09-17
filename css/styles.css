@@ -52,6 +52,15 @@ body {
     font-size: 16px;
     overflow-x: hidden;
     cursor: crosshair;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* Override crosshair cursor when hovering over Google Maps */
@@ -100,6 +109,12 @@ iframe[src*="google.com/maps"]:active {
     margin: 0;
     min-height: auto;
     order: 1; /* Ensure XY is first */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: none;
+    width: auto;
+    flex-shrink: 0;
 }
 
 /* Adjust Search inside HUD */
@@ -110,6 +125,11 @@ iframe[src*="google.com/maps"]:active {
     height: 48px; /* match coordinate pill min-height */
     display: flex;
     align-items: center;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    left: auto;
+    right: auto;
 }
 
 /* Unify Return-to-top design and placement in HUD */
@@ -912,6 +932,12 @@ body.cad-cursor {
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: none;
+    width: auto;
+    flex-shrink: 0;
 }
 
 /* Main pen mode styles removed - only available in sheet enlargement modal */
@@ -1253,6 +1279,7 @@ body.cad-cursor {
         z-index: 1000;
         border-right: 1px solid var(--bg-tertiary);
         overflow-y: auto;
+        display: flex;
     }
 
     /* Show mobile nav when open */
@@ -1306,6 +1333,22 @@ body.cad-cursor {
     .hero-content {
         padding: var(--spacing-lg);
     }
+    
+    /* Ensure navigation is properly hidden on mobile */
+    .nav {
+        position: relative;
+    }
+    
+    .nav .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* Make sure mobile menu button is visible */
+    .mobile-menu-btn {
+        display: flex !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1324,6 +1367,23 @@ body.cad-cursor {
 
     .title-card h1 {
         font-size: 2rem;
+    }
+    
+    /* Extra small mobile navigation improvements */
+    .nav-list {
+        padding: var(--spacing-lg);
+        padding-top: 60px;
+    }
+    
+    .nav-link {
+        font-size: 1rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        min-height: 44px;
+    }
+    
+    .mobile-menu-btn {
+        min-width: 44px;
+        min-height: 44px;
     }
 
 
@@ -2055,6 +2115,12 @@ body.cad-cursor {
         font-size: 0.75rem;
         padding: var(--spacing-sm) var(--spacing-md);
         min-height: 40px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: none;
+        width: auto;
+        flex-shrink: 0;
     }
 }
 
@@ -2063,8 +2129,11 @@ body.cad-cursor {
     position: fixed;
     bottom: 90px;
     right: 30px;
+    left: 30px;
     z-index: 1000;
-    width: 300px;
+    width: auto;
+    max-width: 600px;
+    margin: 0 auto;
     background: var(--bg-secondary);
     border: 1px solid var(--accent-border);
     border-radius: var(--radius-xl);
@@ -2082,6 +2151,8 @@ body.cad-cursor {
     height: 100%;
     min-height: 48px; /* keep enough height so placeholder never clips */
     overflow: visible; /* ensure placeholder isn't clipped */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #searchInput {
@@ -2092,10 +2163,18 @@ body.cad-cursor {
     color: var(--text-primary);
     font-size: 1rem;
     font-weight: 500;
-    padding: 6px 0; /* prevent baseline clipping */
-    line-height: 1.3; /* avoid text cutoff across browsers */
+    padding: 8px 0; /* prevent baseline clipping */
+    line-height: 1.4; /* avoid text cutoff across browsers */
     height: 100%; /* fill bar height so placeholder aligns and isn't clipped */
     font-family: Helvetica, Arial, sans-serif;
+    width: 100%;
+    min-width: 0; /* allow flex shrinking */
+    box-sizing: border-box;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 /* Ensure proper sizing when search is placed into the bottom HUD */
@@ -2134,8 +2213,20 @@ body.cad-cursor {
 .search-results {
     max-height: 400px;
     overflow-y: auto;
-    border-top: 1px solid var(--bg-tertiary);
+    border-bottom: 1px solid var(--bg-tertiary);
     display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin-bottom: 4px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1002;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-border);
+    max-width: calc(100vw - 60px);
+    transform: translateX(0);
 }
 
 .search-results.visible {
@@ -2209,6 +2300,65 @@ body.cad-cursor {
     font-style: italic;
 }
 
+/* Fuzzy search results styling */
+.search-fuzzy-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--bg-tertiary);
+    background: var(--accent-light);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.search-fuzzy-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.search-fuzzy-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.search-result-item.fuzzy-suggestion {
+    border-left: 3px solid var(--accent-primary);
+    background: rgba(255, 107, 53, 0.05);
+    cursor: pointer;
+}
+
+.search-result-item.fuzzy-suggestion:hover {
+    background: var(--accent-light);
+    border-left-color: var(--accent-hover);
+}
+
+.search-fuzzy-score {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+    margin-top: var(--spacing-xs);
+    padding: 2px 6px;
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: var(--radius-sm);
+    display: inline-block;
+}
+
+.search-result-arrow {
+    color: var(--text-muted);
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: var(--spacing-sm);
+}
+
+.search-result-item.fuzzy-suggestion:hover .search-result-arrow {
+    color: var(--accent-primary);
+    opacity: 1;
+    transform: translateX(2px);
+}
+
 /* Mobile search adjustments */
 @media (max-width: 768px) {
     .search-container {
@@ -2220,6 +2370,10 @@ body.cad-cursor {
         transform: none;
         position: fixed;
         z-index: 1001;
+        margin: 0;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        will-change: transform;
     }
     
     .search-bar {
@@ -2232,6 +2386,9 @@ body.cad-cursor {
         font-size: 1rem;
         padding: var(--spacing-sm) 0;
         min-height: 24px;
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: 0;
     }
     
     .search-results {
@@ -2240,13 +2397,18 @@ body.cad-cursor {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         position: absolute;
-        top: 100%;
+        bottom: 100%;
         left: 0;
         right: 0;
-        margin-top: 4px;
+        margin-bottom: 4px;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-lg);
         z-index: 1002;
+        border-bottom: 1px solid var(--bg-tertiary);
+        border-top: none;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        will-change: transform;
     }
     
     .search-result-item {
@@ -2256,11 +2418,30 @@ body.cad-cursor {
         align-items: center;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
+        -webkit-user-select: none;
+        user-select: none;
     }
     
     .search-result-item:active {
         background: var(--accent-light);
         transform: scale(0.98);
+    }
+    
+    .search-result-item.fuzzy-suggestion:active {
+        background: var(--accent-light);
+        transform: scale(0.98);
+        border-left-color: var(--accent-hover);
+    }
+    
+    .search-result-item.touching {
+        background: var(--accent-light);
+        transform: scale(0.98);
+    }
+    
+    .search-result-item.fuzzy-suggestion.touching {
+        background: var(--accent-light);
+        transform: scale(0.98);
+        border-left-color: var(--accent-hover);
     }
     
     .search-result-title {
@@ -2293,6 +2474,7 @@ body.cad-cursor {
         bottom: 70px;
         left: 5px;
         right: 5px;
+        margin: 0;
     }
     
     .search-bar {
@@ -2302,11 +2484,20 @@ body.cad-cursor {
     
     #searchInput {
         font-size: 0.95rem;
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: 0;
     }
     
     .search-results {
         max-height: 45vh;
         max-height: calc(100vh - 180px);
+        bottom: 100%;
+        top: auto;
+        margin-bottom: 4px;
+        margin-top: 0;
+        border-bottom: 1px solid var(--bg-tertiary);
+        border-top: none;
     }
     
     .search-result-item {
@@ -2320,6 +2511,31 @@ body.cad-cursor {
     
     .search-result-description {
         font-size: 0.85rem;
+    }
+}
+
+/* Very narrow screens - ensure navigation works properly */
+@media (max-width: 360px) {
+    .nav-list {
+        padding: var(--spacing-md);
+        padding-top: 50px;
+    }
+    
+    .nav-link {
+        font-size: 0.95rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        min-height: 40px;
+    }
+    
+    .mobile-menu-btn {
+        min-width: 40px;
+        min-height: 40px;
+        padding: var(--spacing-xs);
+    }
+    
+    .mobile-menu-btn svg {
+        width: 20px;
+        height: 20px;
     }
 }
 

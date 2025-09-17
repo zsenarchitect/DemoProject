@@ -2517,6 +2517,135 @@ function initializeSearchFunctionality() {
         return icons[type] || icons['gallery-item'];
     }
     
+    // Fuzzy search function with improved algorithm
+    function fuzzyMatch(query, text) {
+        const queryLower = query.toLowerCase();
+        const textLower = text.toLowerCase();
+        
+        // If exact match, return high score
+        if (textLower.includes(queryLower)) {
+            return 100;
+        }
+        
+        // Check for word boundary matches (higher priority)
+        const words = textLower.split(/\s+/);
+        for (const word of words) {
+            if (word.startsWith(queryLower)) {
+                return 90;
+            }
+            if (word.includes(queryLower)) {
+                return 80;
+            }
+        }
+        
+        // Calculate fuzzy match score with character sequence matching
+        let score = 0;
+        let queryIndex = 0;
+        let consecutiveMatches = 0;
+        let maxConsecutive = 0;
+        
+        for (let i = 0; i < textLower.length && queryIndex < queryLower.length; i++) {
+            if (textLower[i] === queryLower[queryIndex]) {
+                score += 1;
+                queryIndex++;
+                consecutiveMatches++;
+                maxConsecutive = Math.max(maxConsecutive, consecutiveMatches);
+            } else {
+                consecutiveMatches = 0;
+            }
+        }
+        
+        // Bonus for consecutive matches
+        const consecutiveBonus = maxConsecutive * 2;
+        
+        // Calculate base percentage
+        const baseScore = (score / queryLower.length) * 100;
+        
+        // Apply bonuses and penalties
+        let finalScore = baseScore + consecutiveBonus;
+        
+        // Penalty for very short queries
+        if (queryLower.length < 3) {
+            finalScore *= 0.8;
+        }
+        
+        // Bonus for longer matches
+        if (score > queryLower.length * 0.7) {
+            finalScore *= 1.2;
+        }
+        
+        return Math.min(finalScore, 100);
+    }
+    
+    // Common typo corrections
+    const typoCorrections = {
+        'rendering': ['render', 'rendr', 'rendring', 'renderng'],
+        'drawing': ['draw', 'drawng', 'dawing', 'drowing'],
+        'elevation': ['elevat', 'elevtion', 'elevatin', 'elevatn'],
+        'section': ['sect', 'secton', 'sectin', 'sectn'],
+        'floor': ['flor', 'flor', 'floar', 'flr'],
+        'plan': ['pln', 'plan', 'plann'],
+        'detail': ['detai', 'detil', 'detial', 'detal'],
+        'ceiling': ['ceilin', 'ceiling', 'ceilin', 'ceilng'],
+        'safety': ['safet', 'saftey', 'safte', 'safey'],
+        'colored': ['color', 'colrd', 'colord', 'colred']
+    };
+    
+    // Get fuzzy search suggestions
+    function getFuzzySuggestions(query, threshold = 30) {
+        const suggestions = [];
+        const queryLower = query.toLowerCase().trim();
+        
+        // Try original query first
+        searchData.forEach(item => {
+            const titleScore = fuzzyMatch(queryLower, item.title);
+            const descriptionScore = fuzzyMatch(queryLower, item.description);
+            const sectionScore = fuzzyMatch(queryLower, item.sectionTitle);
+            
+            const maxScore = Math.max(titleScore, descriptionScore, sectionScore);
+            
+            if (maxScore >= threshold) {
+                suggestions.push({
+                    ...item,
+                    fuzzyScore: maxScore,
+                    matchedField: titleScore === maxScore ? 'title' : 
+                                 descriptionScore === maxScore ? 'description' : 'section'
+                });
+            }
+        });
+        
+        // If no good matches, try common typo corrections
+        if (suggestions.length === 0) {
+            for (const [correct, typos] of Object.entries(typoCorrections)) {
+                if (typos.includes(queryLower)) {
+                    // Search with corrected term
+                    searchData.forEach(item => {
+                        const titleScore = fuzzyMatch(correct, item.title);
+                        const descriptionScore = fuzzyMatch(correct, item.description);
+                        const sectionScore = fuzzyMatch(correct, item.sectionTitle);
+                        
+                        const maxScore = Math.max(titleScore, descriptionScore, sectionScore);
+                        
+                        if (maxScore >= threshold) {
+                            suggestions.push({
+                                ...item,
+                                fuzzyScore: maxScore * 0.9, // Slightly lower score for corrected terms
+                                matchedField: titleScore === maxScore ? 'title' : 
+                                             descriptionScore === maxScore ? 'description' : 'section',
+                                correctedFrom: queryLower
+                            });
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Sort by fuzzy score and return top 3
+        return suggestions
+            .sort((a, b) => b.fuzzyScore - a.fuzzyScore)
+            .slice(0, 3);
+    }
+    
     // Perform search
     function performSearch(query) {
         if (!query || query.length < 2) {
@@ -2530,7 +2659,67 @@ function initializeSearchFunctionality() {
         );
         
         currentResults = results;
-        displaySearchResults(results, searchTerm);
+        
+        // If no exact matches, try fuzzy search
+        if (results.length === 0) {
+            const fuzzySuggestions = getFuzzySuggestions(searchTerm);
+            if (fuzzySuggestions.length > 0) {
+                currentResults = fuzzySuggestions; // Store fuzzy suggestions for navigation
+                displayFuzzySearchResults(fuzzySuggestions, searchTerm);
+            } else {
+                displaySearchResults(results, searchTerm);
+            }
+        } else {
+            displaySearchResults(results, searchTerm);
+        }
+    }
+    
+    // Display fuzzy search results with "Did you mean..." format
+    function displayFuzzySearchResults(suggestions, searchTerm) {
+        const hasCorrections = suggestions.some(item => item.correctedFrom);
+        const headerTitle = hasCorrections ? "Did you mean..." : "Did you mean...";
+        const headerSubtitle = hasCorrections ? 
+            `No exact matches for "${searchTerm}" - showing corrected results` : 
+            `No exact matches for "${searchTerm}"`;
+            
+        searchResults.innerHTML = `
+            <div class="search-fuzzy-header">
+                <div class="search-fuzzy-title">${headerTitle}</div>
+                <div class="search-fuzzy-subtitle">${headerSubtitle}</div>
+            </div>
+            ${suggestions.map(item => `
+                <div class="search-result-item fuzzy-suggestion" data-type="${item.type}" data-section="${item.section}">
+                    <div class="search-result-icon">
+                        ${getSearchResultIcon(item.type)}
+                    </div>
+                    <div class="search-result-content">
+                        <div class="search-result-title">
+                            ${highlightSearchTerms(item.title, searchTerm)}
+                        </div>
+                        <div class="search-result-description">
+                            ${highlightSearchTerms(item.description, searchTerm)}
+                        </div>
+                        <div class="search-result-section">
+                            ${item.sectionTitle}
+                        </div>
+                        <div class="search-fuzzy-score">
+                            ${Math.round(item.fuzzyScore)}% match
+                            ${item.correctedFrom ? ` • corrected from "${item.correctedFrom}"` : ''}
+                        </div>
+                    </div>
+                    <div class="search-result-arrow">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        
+        searchResults.classList.add('visible');
+        
+        // Adjust popup position to stay within viewport
+        adjustSearchResultsPosition();
     }
     
     // Display search results
@@ -2563,6 +2752,73 @@ function initializeSearchFunctionality() {
         }
         
         searchResults.classList.add('visible');
+        
+        // Adjust popup position to stay within viewport
+        adjustSearchResultsPosition();
+    }
+    
+    // Adjust search results position to stay within viewport
+    function adjustSearchResultsPosition() {
+        if (!searchResults.classList.contains('visible')) return;
+        
+        const searchContainer = searchResults.closest('.search-container');
+        if (!searchContainer) return;
+        
+        const containerRect = searchContainer.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const popupWidth = searchResults.offsetWidth;
+        
+        // Reset any previous positioning
+        searchResults.style.left = '0';
+        searchResults.style.right = '0';
+        searchResults.style.transform = 'translateX(0)';
+        searchResults.style.maxWidth = 'none';
+        
+        // Check if popup extends beyond right edge of viewport
+        const popupRightEdge = containerRect.left + popupWidth;
+        const rightOverflow = popupRightEdge - viewportWidth + 20; // 20px margin
+        
+        if (rightOverflow > 0) {
+            // Move popup to the left to stay within viewport
+            const newLeft = Math.max(0, -rightOverflow);
+            searchResults.style.left = `${newLeft}px`;
+            searchResults.style.right = 'auto';
+            searchResults.style.maxWidth = `${viewportWidth - containerRect.left - newLeft - 20}px`;
+        }
+        
+        // Check if popup extends beyond left edge of viewport
+        const popupLeftEdge = containerRect.left + (parseInt(searchResults.style.left) || 0);
+        const leftOverflow = -popupLeftEdge + 20; // 20px margin
+        
+        if (leftOverflow > 0) {
+            // Move popup to the right to stay within viewport
+            const newLeft = Math.max(0, leftOverflow);
+            searchResults.style.left = `${newLeft}px`;
+            searchResults.style.maxWidth = `${viewportWidth - newLeft - 20}px`;
+        }
+        
+        // Check if popup extends above the top of viewport
+        const popupHeight = searchResults.offsetHeight;
+        const popupTopEdge = containerRect.top - popupHeight - 4; // 4px margin
+        const topOverflow = -popupTopEdge + 20; // 20px margin from top
+        
+        if (topOverflow > 0) {
+            // If popup would go above viewport, position it below instead
+            searchResults.style.bottom = 'auto';
+            searchResults.style.top = '100%';
+            searchResults.style.marginBottom = '0';
+            searchResults.style.marginTop = '4px';
+            searchResults.style.borderBottom = 'none';
+            searchResults.style.borderTop = '1px solid var(--bg-tertiary)';
+        } else {
+            // Ensure it's positioned above
+            searchResults.style.bottom = '100%';
+            searchResults.style.top = 'auto';
+            searchResults.style.marginBottom = '4px';
+            searchResults.style.marginTop = '0';
+            searchResults.style.borderBottom = '1px solid var(--bg-tertiary)';
+            searchResults.style.borderTop = 'none';
+        }
     }
     
     // Hide search results
@@ -2573,8 +2829,11 @@ function initializeSearchFunctionality() {
     
     // Jump to search result
     function jumpToResult(resultItem) {
+        console.log('jumpToResult called with:', resultItem);
         const type = resultItem.dataset.type;
         const section = resultItem.dataset.section;
+        
+        console.log('Jumping to:', type, section);
         
         if (type === 'section') {
             // Jump to section
@@ -2590,9 +2849,14 @@ function initializeSearchFunctionality() {
             }
         } else if (type === 'gallery-item') {
             // Find the corresponding gallery item and jump to it
-            const resultIndex = Array.from(searchResults.children).indexOf(resultItem);
+            // For fuzzy suggestions, we need to account for the header
+            const resultItems = Array.from(searchResults.querySelectorAll('.search-result-item'));
+            const resultIndex = resultItems.indexOf(resultItem);
+            console.log('Gallery item result index:', resultIndex, 'currentResults length:', currentResults.length);
+            
             if (resultIndex >= 0 && currentResults[resultIndex]) {
                 const targetElement = currentResults[resultIndex].element;
+                console.log('Target element found:', targetElement);
                 if (targetElement) {
                     targetElement.scrollIntoView({
                         behavior: 'smooth',
@@ -2630,16 +2894,19 @@ function initializeSearchFunctionality() {
             hideSearchResults();
         }
         
-        // Debounce search
+        // Debounce search (shorter delay on mobile for better responsiveness)
         clearTimeout(searchTimeout);
+        const delay = 'ontouchstart' in window ? 200 : 300;
         searchTimeout = setTimeout(() => {
             performSearch(query);
-        }, 300);
+        }, delay);
     });
     
     searchInput.addEventListener('focus', function() {
         if (this.value.trim().length > 0) {
             searchResults.classList.add('visible');
+            // Adjust position when focusing
+            setTimeout(() => adjustSearchResultsPosition(), 10);
         }
     });
     
@@ -2652,8 +2919,17 @@ function initializeSearchFunctionality() {
     
     // Click on search results
     searchResults.addEventListener('click', function(e) {
+        console.log('Search results clicked, target:', e.target);
+        console.log('Search results clicked, currentTarget:', e.currentTarget);
+        
         const resultItem = e.target.closest('.search-result-item');
+        console.log('Found result item:', resultItem);
+        
         if (resultItem) {
+            console.log('Search result clicked:', resultItem.dataset.type, resultItem.dataset.section);
+            console.log('Is fuzzy suggestion:', resultItem.classList.contains('fuzzy-suggestion'));
+            e.preventDefault();
+            e.stopPropagation();
             jumpToResult(resultItem);
         }
     });
@@ -2663,6 +2939,17 @@ function initializeSearchFunctionality() {
         if (!e.target.closest('.search-container')) {
             hideSearchResults();
         }
+    });
+    
+    // Adjust position on window resize (debounced for mobile performance)
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (searchResults.classList.contains('visible')) {
+                adjustSearchResultsPosition();
+            }
+        }, 100);
     });
     
     // Keyboard navigation
@@ -2700,6 +2987,7 @@ function initializeSearchFunctionality() {
             const resultItem = e.target.closest('.search-result-item');
             if (resultItem) {
                 resultItem.style.transition = 'transform 0.1s ease';
+                resultItem.classList.add('touching');
             }
         });
         
@@ -2707,12 +2995,22 @@ function initializeSearchFunctionality() {
             const resultItem = e.target.closest('.search-result-item');
             if (resultItem) {
                 resultItem.style.transition = '';
+                resultItem.classList.remove('touching');
+            }
+        });
+        
+        searchResults.addEventListener('touchcancel', function(e) {
+            const resultItem = e.target.closest('.search-result-item');
+            if (resultItem) {
+                resultItem.style.transition = '';
+                resultItem.classList.remove('touching');
             }
         });
         
         // Improve search result scrolling on mobile
         if ('ontouchstart' in window) {
             searchResults.style.webkitOverflowScrolling = 'touch';
+            searchResults.style.overflowScrolling = 'touch';
         }
     }
     
